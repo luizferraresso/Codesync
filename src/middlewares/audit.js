@@ -4,7 +4,7 @@ function auditMiddleware(req, res, next) {
   res.on('finish', () => {
     if (req.path === '/health') return;
     if (!['POST','PUT','PATCH','DELETE'].includes(req.method)) return;
-    const segments = req.path.split('/').filter(Boolean);
+    const segments = req.originalUrl.split('?')[0].split('/').filter(Boolean);
     const resource = segments[2] || 'unknown';
     const action = resource === 'auth'
       ? (segments[3] === 'login' ? 'AUTENTICACAO' : 'CADASTRO')
