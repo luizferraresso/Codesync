@@ -42,6 +42,6 @@ services:
       TRUST_PROXY_HOPS: ${TRUST_PROXY_HOPS:-0}
       LOG_LEVEL: ${LOG_LEVEL:-info}
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
 volumes:
   mysql_data:
