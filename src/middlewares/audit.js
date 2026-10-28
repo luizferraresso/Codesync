@@ -1,10 +1,12 @@
 'use strict';
 const audit = require('../services/audit.service');
 function auditMiddleware(req, res, next) {
+  // req.originalUrl nunca e alterado pelo Express; req.path perde o prefixo dentro de sub-roteadores.
+  const fullPath = req.originalUrl.split('?')[0];
   res.on('finish', () => {
-    if (req.path === '/health') return;
+    if (fullPath === '/health') return;
     if (!['POST','PUT','PATCH','DELETE'].includes(req.method)) return;
-    const segments = req.originalUrl.split('?')[0].split('/').filter(Boolean);
+    const segments = fullPath.split('/').filter(Boolean);
     const resource = segments[2] || 'unknown';
     const action = resource === 'auth'
       ? (segments[3] === 'login' ? 'AUTENTICACAO' : 'CADASTRO')
