@@ -1,5 +1,7 @@
 # Histórico original da Parte 3
 
+> **Registro histórico da consolidação original.** Resultados e limitações descritos abaixo pertencem àquela versão. Para o estado validado em 28/10/2026, consulte a [documentação atual](../README.md); não usar estes passos antigos como guia operacional.
+
 > Documento preservado para rastreabilidade. O README da raiz e a auditoria técnica da Parte 4 prevalecem.
 
 # HospedJá — CodeSync — Checkpoint 3 — Parte 3

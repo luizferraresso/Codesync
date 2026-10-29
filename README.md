@@ -5,10 +5,15 @@
 **Consolidação:** Partes 1, 2, 3 e 4 em um único repositório, 24/10/2026.  
 **Equipe:** 5 integrantes (inserir nomes reais).
 
+**Deploy verificado em 29/10/2026:** [API/health](https://44.201.28.10/health) e [Swagger](https://44.201.28.10/api-docs/) disponíveis por HTTPS, com RDS privado, migração aplicada e 19 verificações operacionais aprovadas. Consulte o [registro do deploy e cuidados de operação](docs/DEPLOY_AWS_2026-10-29.md). O PDF de 28/10 é anterior a essa implantação.
+
+**Validação em 28/10/2026:** correções de segurança e integridade aplicadas; API e MySQL 8 executados em Docker. Veja [correções e execução local](docs/CORRECOES_E_DOCKER_2026-10-28.md) e a [avaliação anterior às correções](docs/AVALIACAO_PROJETO_2026-10-28.md).
+
 ## Acesso rápido
 
 | Documento | Para que serve |
 |---|---|
+| [Índice da documentação atual](docs/README.md) | Situação comprovada, documentos atuais e registros históricos |
 | [Resumo executivo](docs/RESUMO_EXECUTIVO.md) | O que foi feito, o que falta, pontos críticos |
 | [Revisão das partes 1–3](docs/REVISAO_GERAL.md) | Auditoria técnica e limites de validação |
 | [Matriz RF01–RF35/RNF01–RNF14](docs/MATRIZ_REQUISITOS_CP2.md) | Cobertura dos requisitos originais |
@@ -16,17 +21,18 @@
 | [Como testar e registrar evidências](docs/TESTES_E_EVIDENCIAS.md) | Passo a passo local, Jest, MySQL e prints |
 | [Diagramas](docs/DIAGRAMAS_INTERACAO.md) | Seis diagramas de interação `.drawio` editáveis |
 | [Roteiro de apresentação](docs/ROTEIRO_APRESENTACAO_6_MINUTOS.md) | Fala dividida entre os cinco colegas |
-| [PDF único](entrega/HospedJa_Checkpoint3_Documento_Unico.pdf) | Relatório acadêmico preliminar |
-| [Roteiro AWS](aws/DEPLOY_AWS.md) | Proposta EC2+RDS, sem recursos provisionados |
+| [PDF único](entrega/HospedJa_Checkpoint3_Documento_Unico.pdf) | Relatório consolidado atualizado em 28/10/2026 |
+| [Deploy AWS verificado](docs/DEPLOY_AWS_2026-10-29.md) | URL pública, migração, HTTPS, evidências e recuperação |
+| [Roteiro AWS](aws/DEPLOY_AWS.md) | Procedimento EC2/RDS e limites de operação |
 | [Rotas e perfis](docs/ROTAS_E_PERMISSOES.md) | Contrato HTTP e permissões |
 
-## 1. O que já foi desenvolvido (presença de código, NÃO execução comprovada)
+## 1. O que já foi desenvolvido
 
 - SQL MySQL 8 com **40 tabelas**, PK/FK, restrições, índices, seed local e script de verificação.
 - API Node.js 22 + Express em camadas `routes → controllers → services → repositories`.
-- Cadastro/login/troca de senha; `bcrypt`, JWT, validação Zod, middleware de autorização.
+- Cadastro/login/troca de senha; `bcrypt` com limite UTF-8, JWT revogado após troca de senha, Zod 4 e autorização.
 - Rotas de usuários, hotéis, quartos, guias, reservas em rascunho, pagamentos administrativos preliminares, ocorrências e revisão humana.
-- Auditoria de requisições mutantes com `Winston` e `tb_log`; persistência deve ser validada.
+- Auditoria de requisições mutantes com `Winston` e `tb_log`; persistência testada em MySQL, com garantia best-effort.
 - Documentação `/api-docs/` (Swagger) e `/openapi.json`.
 - Testes unitários/HTTP (Jest/Supertest), integração opcional MySQL e laboratório TDD didático.
 - Dockerfile, Compose, CI GitHub Actions e roteiro AWS (EC2, RDS, SSM/HTTPS).
@@ -62,12 +68,10 @@ referencias/     artefatos CP2 fornecidos pela equipe
 ## 5. Rodar a API local com Docker
 
 ```bash
-cp .env.example .env
-# edite .env e acrescente também MYSQL_ROOT_PASSWORD=<valor forte>
-# substitua DB_PASSWORD, JWT_SECRET e demais placeholders
-# NODE_ENV=development para testes locais
+node scripts/setup-local-env.js
+# Cria .env com segredos aleatórios; preserva um .env que já exista.
 
-docker compose up --build -d
+docker compose up --build -d --wait
 docker compose ps
 curl http://localhost:3000/health
 ```
@@ -79,7 +83,7 @@ Para executar sem Docker, suba MySQL, aplique `database/01_schema.sql` e `databa
 ## 6. Testes, cobertura e TDD
 
 ```bash
-npm install               # gerar package-lock.json e versioná-lo
+npm ci                    # instalar as versões fixadas no package-lock.json
 npm run check
 npm run integrity
 npm test
@@ -87,6 +91,7 @@ npm run test:coverage    # relatório HTML: coverage/index.html
 npm run test:tdd:red     # falha intencional para demonstrar Red
 npm run test:tdd:green
 npm run test:tdd:refactor
+npm run test:docker       # testes em Node.js 22 + MySQL 8 isolados
 ```
 
 **Testes com MySQL real isolado:** siga [docs/TESTES_E_EVIDENCIAS.md](docs/TESTES_E_EVIDENCIAS.md); serviço em `compose.integration.yaml`. Nunca executar contra RDS de produção.
@@ -108,9 +113,9 @@ Base URL: `http://localhost:3000/api/v1`. Autenticação: `Authorization: Bearer
 
 O projeto mantém serviços e validações separados da camada HTTP. `src/docs/openapi.yaml` é a especificação detalhada.
 
-## 8. AWS: NÃO implantado
+## 8. AWS: implantação verificada em 29/10/2026
 
-`aws/DEPLOY_AWS.md` documenta EC2 + RDS MySQL privado, SSM Parameter Store e Nginx/HTTPS. **Ainda não foi criado nenhum recurso AWS com esta entrega, nem obtida URL pública ou custo observado.** Só seguir esse roteiro após autorização da equipe e orçamento aprovado.
+O backend `eb05c89` foi implantado na EC2 existente com RDS MySQL privado, Parameter Store e Nginx/HTTPS. [Swagger público](https://44.201.28.10/api-docs/) e 19 verificações operacionais passaram. Veja [evidências, backup, renovação e limites](docs/DEPLOY_AWS_2026-10-29.md) e o [roteiro operacional](aws/DEPLOY_AWS.md). Custos efetivos e orçamento não foram auditados nesta operação.
 
 ## 9. GitHub: como compartilhar com os cinco integrantes
 
@@ -128,11 +133,11 @@ git push -u origin main
 
 3. Abra as issues listadas em `docs/DIVISAO_EQUIPE_E_BACKLOG.md`, distribua responsáveis e peça PRs revisadas.
 4. Garanta commits semanais futuros; não invente commits históricos.
-5. Configurar GitHub Actions após gerar `package-lock.json` e validar as dependências.
+5. Habilitar o workflow GitHub Actions com `npm ci`, cobertura global, validação de YAML, auditoria de produção e integração MySQL 8.
 
 ## 10. Entrega para a disciplina
 
-`entrega/HospedJa_Checkpoint3_Documento_Unico.pdf` é um relatório preliminar consolidado; atualizar com **prints reais** antes de submeter. Também conferir se o professor espera as fontes dos diagramas além do PDF. O comunicado oficial prevê documento + artefatos em **PDF único** e apresentação do grupo.
+`entrega/HospedJa_Checkpoint3_Documento_Unico.pdf` foi regenerado com os documentos atuais, seis diagramas e transcrições reais de testes/Docker/HTTP, além dos links da CI. Preencher a identificação acadêmica e confirmar se o professor exige capturas adicionais e fontes dos diagramas; veja [geração e conferência do PDF](docs/PDF_UNICO_E_ENTREGA.md). O comunicado oficial prevê documento + artefatos em **PDF único** e apresentação do grupo.
 
 **ProjectLibre/ClickUp:** não incluídos por solicitação da equipe. Isso não elimina eventual exigência oficial de atualização semanal no ProjectLibre; confirmar com o professor.
 
@@ -141,6 +146,6 @@ git push -u origin main
 - SQL parametrizado, bcrypt e JWT estão presentes, mas dependem de testes executados.
 - A gravação em `tb_log` é **best-effort** (erros no banco são logados e não bloqueiam a requisição). Avaliar política de auditoria em operações críticas.
 - Não rodar o seed do Compose em RDS ou produção. O bootstrap de administrador para AWS existe em `src/cli/bootstrap-admin.js`.
-- A revisão estática confirma apenas sintaxe e coerência estrutural; testes, cobertura, Docker e AWS precisam de execução real.
+- Testes e Docker foram executados localmente em 28/10/2026; deploy AWS e 19 verificações públicas passaram em 29/10. Carga, restauração de backups e funcionalidades futuras continuam pendentes.
 
 Leia também [CONTRIBUTING.md](CONTRIBUTING.md) e [docs/REVISAO_GERAL.md](docs/REVISAO_GERAL.md) antes de abrir a primeira PR.

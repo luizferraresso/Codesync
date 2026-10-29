@@ -1,28 +1,40 @@
 digraph D {
-graph [rankdir=TB,bgcolor=white,ranksep="0.9",nodesep="0.45",pad="0.25",splines=polyline];
-node [shape=box,style="rounded,filled",fillcolor="#F6F8FB",color="#48637C",fontcolor="#12253A",fontname="DejaVu Sans",fontsize=11,margin="0.15,0.15"];
-edge [color="#53728D",arrowsize=0.7];
+graph [rankdir=TB,bgcolor=white,ranksep="1.1",nodesep="0.6",pad="0.3",splines=polyline];
+node [shape=box,style="rounded,filled",fillcolor="#F6F8FB",color="#48637C",fontcolor="#12253A",fontname="DejaVu Sans",fontsize=12,margin="0.18,0.16"];
+edge [color="#53728D",fontcolor="#39546B",fontname="DejaVu Sans",fontsize=10,arrowsize=0.7];
 {rank=same; "ClienteHTTP";}
-"ClienteHTTP" [label="ClienteHTTP\nJSON / HTTP"];
+"ClienteHTTP" [label="Cliente HTTP\nSwagger / requisições JSON"];
 {rank=same; "ExpressAPI";}
-"ExpressAPI" [label="ExpressAPI\nNode.js\nExpress.js"];
-{rank=same; "AuthService"; "CatalogService"; "ReservationService"; "AuditService";}
-"AuthService" [label="AuthService\nJWT / bcrypt"];
-"CatalogService" [label="CatalogService\nhoteis / quartos / guias"];
-"ReservationService" [label="ReservationService\nrascunhos"];
-"AuditService" [label="AuditService\nauditoria"];
-{rank=same; "Repositories";}
-"Repositories" [label="Repositories\nmysql2\nSQL parametrizado"];
-{rank=same; "MySQL8";}
-"MySQL8" [label="MySQL8\npersistencia"];
+"ExpressAPI" [label="ExpressAPI\nNode.js 22 · Express\nrotas · controllers · middlewares\nZod 4"];
+{rank=same; "AuthService"; "CatalogService"; "ReservationService"; "OccurrenceService"; "AuditService";}
+"AuthService" [label="AuthService\nbcrypt · JWT\nrevogação de sessão"];
+"CatalogService" [label="CatalogService\nhotéis · quartos · guias\nfiltros SQL · paginação"];
+"ReservationService" [label="Reserva / pagamento interno\nrascunhos e lançamentos\ntransações e bloqueios"];
+"OccurrenceService" [label="OccurrenceService\nautorização e vínculos\nanálise humana"];
+"AuditService" [label="AuditService\nmetadados sanitizados\nbest-effort"];
+{rank=same; "Repositories"; "MySQLPool"; "WinstonLogger";}
+"Repositories" [label="Repositories\nUser · SQL\nReservation · Access"];
+"MySQLPool" [label="mysql2 Pool / Connection\nSQL parametrizado\ntransações"];
+"WinstonLogger" [label="WinstonLogger\ninfo() · error()"];
+{rank=same; "MySQL8"; "LogArquivoOuStdout";}
+"MySQL8" [label="MySQL 8.0 / 8.4\n40 tabelas\nambientes locais isolados"];
+"LogArquivoOuStdout" [label="Stdout / arquivo opcional\neventos JSON"];
 "ClienteHTTP" -> "ExpressAPI";
 "ExpressAPI" -> "AuthService";
 "ExpressAPI" -> "CatalogService";
 "ExpressAPI" -> "ReservationService";
+"ExpressAPI" -> "OccurrenceService";
 "ExpressAPI" -> "AuditService";
 "AuthService" -> "Repositories";
 "CatalogService" -> "Repositories";
+"CatalogService" -> "MySQLPool";
 "ReservationService" -> "Repositories";
-"AuditService" -> "Repositories";
-"Repositories" -> "MySQL8";
+"ReservationService" -> "MySQLPool";
+"OccurrenceService" -> "Repositories";
+"OccurrenceService" -> "MySQLPool";
+"AuditService" -> "MySQLPool";
+"AuditService" -> "WinstonLogger";
+"Repositories" -> "MySQLPool";
+"MySQLPool" -> "MySQL8";
+"WinstonLogger" -> "LogArquivoOuStdout";
 }

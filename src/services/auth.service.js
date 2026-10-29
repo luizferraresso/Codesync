@@ -2,7 +2,6 @@
 const users = require('../repositories/user.repository');
 const { hashPassword, verifyPassword, signToken } = require('../utils/security');
 const { fail } = require('../utils/errors');
-const bcrypt = require('bcrypt');
 async function register(data,role = 'CLIENTE') {
   const registered = await users.byEmail(data.email);
   if (registered) fail(409,'EMAIL_CADASTRADO','Email ja cadastrado');
@@ -26,7 +25,8 @@ async function changePassword(userId, data) {
   const profile = await users.byId(userId);
   if (!profile) fail(404,'NAO_ENCONTRADO','Usuario nao encontrado');
   const user = await users.byEmail(profile.email);
-  if (!await bcrypt.compare(data.atual, user.senha_hash)) fail(401,'SENHA_ATUAL_INVALIDA','Senha atual invalida');
-  await users.update(userId, { senha_hash: await hashPassword(data.nova) });
+  if (!await verifyPassword(data.atual, user.senha_hash)) fail(401,'SENHA_ATUAL_INVALIDA','Senha atual invalida');
+  const changed = await users.changePassword(userId,await hashPassword(data.nova),user.senha_hash);
+  if (!changed) fail(409,'SENHA_ALTERADA','Senha alterada em outra sessao; autentique novamente');
 }
 module.exports = { register, registerStaff: data => register(data,data.tipo_usuario), authenticate, changePassword };

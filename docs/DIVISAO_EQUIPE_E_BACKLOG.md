@@ -1,45 +1,38 @@
-# Divisão de trabalho para 5 integrantes - CodeSync
+# Divisão de trabalho e backlog — CodeSync
 
-Os nomes não foram informados; substituir **Integrante 1...5** pelos membros reais e cadastrar as tarefas como issues do GitHub. A divisão contempla finalizar e validar o que foi entregue, sem prometer sistemas prontos.
+**Revisão: 28/10/2026.** Manter Integrante 1…5 até a equipe confirmar a atribuição dos nomes. A [issue #2](https://github.com/luizferraresso/Codesync/issues/2) acompanha a consolidação publicada na [PR #3](https://github.com/luizferraresso/Codesync/pull/3); ainda é necessária revisão de outro integrante.
 
-| Responsável | Área | Entregas e Issues sugeridas | Critério objetivo de conclusão |
-|---|---|---|---|
-| Integrante 1 | Banco / persistência | **P0 DB-01:** executar MySQL 8, testar schema, seed e `03_verificacao.sql`; **DB-02:** migrar e documentar índices; **DB-03:** validar inconsistências DER × classes | SQL executado, prints/saídas reais, queries sem falhas, PR do banco |
-| Integrante 2 | Autenticação / segurança | **P0 AUTH-01:** validar cadastro/login JWT/bcrypt e troca de senha; **AUTH-02:** revisão de permissões/privacidade; **AUTH-03:** configurar segredos/CA TLS | Testes negativos, token inválido, hash, acessos negados e PR revisado |
-| Integrante 3 | Reservas / pagamentos | **P0 REST-01:** testar API de reservas preliminares; **REST-02:** documentar pendência de disponibilidade e regra 7 dias; **PAY-01:** preparar contrato webhook Mercado Pago com testes de idempotência, sem ativar confirmação fictícia | Testes com BD isolado e sem prometer integração real; PR + OpenAPI revisado |
-| Integrante 4 | Qualidade / DevOps | **P0 QA-01:** instalar dependências, gerar lockfile e executar testes/cobertura; **QA-02:** subir Docker Compose; **P0 AWS-01:** deploy EC2+RDS privado e HTTPS (somente após autorização da equipe); **QA-03:** CI GitHub Actions | Logs/testes reais, screenshot CI, URL HTTPS e checklist AWS somente se realmente obtidos |
-| Integrante 5 | Documentação / interface / SAC | **P0 DOC-01:** revisar diagramas e OpenAPI, consolidar PDF único; **DOC-02:** preparar apresentação e evidências; **SAC-01:** especificar rotas e testes DeepSeek/SAC; **OCO-01:** projetar aplicação manual de penalidades | PDF com evidências reais, diagramas validados, roteiro ensaiado e issues de integração |
+## Validações já realizadas
 
-## Dependências e ordem prática
+| Item original | Estado atual |
+|---|---|
+| DB-01: executar schema/seed/verificação | Executado localmente; 40 tabelas, 68 FKs e restrições verificadas |
+| QA-01: dependências/lockfile/Jest/cobertura | Concluído; 149 testes do backend e 90,09% de linhas em todo src |
+| QA-02: Docker e saúde | API e banco locais validados; bancos de integração isolados |
+| AUTH-01: cadastro/login/troca/401/403 | Fluxos exercitados; versão de sessão e limite UTF-8 implementados |
+| REST-01: rascunho e cancelamento restrito | Testados; bloqueio transacional e rollback cobertos |
+| QA-03: pipeline inicial | Workflow publicado e execuções de push/PR aprovadas |
+| DOC-01: documentação e fontes dos diagramas | Fontes/previews e PDF atualizados; identificação e revisão acadêmica final pendentes |
 
-1. Integrante 1 entrega MySQL local; Integrantes 2 e 3 dependem de dados estáveis.
-2. Integrante 4 gera lockfile e valida pipeline em paralelo aos testes dos integrantes 2 e 3.
-3. Integrante 5 valida contrato Swagger com o backend, recolhe evidências reais e fecha PDF/apresentação.
-4. Após validação local e autorização de custos, Integrante 4 provisiona AWS e coordena confirmação com 1 e 2.
+Esses resultados não encerram os módulos completos nem substituem testes das funcionalidades futuras.
 
-## Backlog priorizado para abrir como issues
+## Próximas entregas por área
 
-**P0 - bloqueia demonstração funcional**
-- DB-01 Executar schema + seed no MySQL 8 e comprovar integridade
-- QA-01 Instalar dependências, produzir `package-lock.json`, executar Jest e registrar cobertura
-- QA-02 Executar Compose e validar health + CRUD e auditoria
-- AUTH-01 Validar fluxos cadastro/login/401/403/alteração de senha
-- REST-01 Validar rascunhos de reservas, alterações e cancelamento restrito
-- DOC-01 Atualizar documentação com outputs reais e informações da equipe
-- AWS-01 Provisionar endpoint público HTTPS, RDS privado e comprovar conexão (se obrigatório para checkpoint)
+| Responsável | Prioridade e tarefa | Critério de conclusão |
+|---|---|---|
+| Integrante 1 — banco | P0: migração no ambiente remoto com backup e usuário autorizado; P1: inventário por intervalo, índices e recuperação | Migração comprovada, ausência de conflitos de disponibilidade e restauração ensaiada |
+| Integrante 2 — segurança | P0: revisar PR, permissões reais AWS e TLS; P1: ampliar cenários de sessão/privacidade, acompanhar alertas de desenvolvimento | Revisão independente, acessos negativos e controles remotos exercitados |
+| Integrante 3 — domínio | P1: pesquisa, seleção/cotação, disponibilidade e confirmação de reserva; integrações e regras definitivas | Fluxo completo testado sem confirmação fictícia nem overbooking |
+| Integrante 4 — qualidade/DevOps | P0 AWS-01: obter acesso e inspecionar o ambiente existente; validar EC2/RDS, migração e HTTPS; P1: carga, monitoração e backup | URL HTTPS, configuração restrita e evidências reais; sem criar infraestrutura duplicada |
+| Integrante 5 — documentação/SAC | P0 DOC-02: preencher equipe, revisar a submissão do PDF atualizado e ensaiar apresentação; P1 SAC-01/OCO-01: mensagens, DeepSeek, atendimento e penalidades manuais | PDF conferido, histórico de atendimento e decisões humanas rastreáveis |
 
-**P1 - incremento posterior / dependente de requisitos**
-- REST-02 Seleção e disponibilidade de quartos, bloqueio de estoque, preço
-- PAY-01 Mercado Pago (webhook autenticado, conciliação e idempotência)
-- OCO-01 Processo administrativo de punições sem decisão automática
-- SAC-01 API de mensagens, DeepSeek, operador e histórico
-- QA-03 Cobertura de privacidade, carga, falhas de banco e integrações
-- DOC-02 Evidências GitHub semanais e alinhamento com item ProjectLibre do professor
+## Ordem de execução
 
-## Convenção de commits e branches
+1. Revisar a PR publicada e integrar as correções à main conforme a política do repositório.
+2. Obter acesso à AWS e identificar recursos/revisão/schema existentes antes de alterar o ambiente; conferir backup e migração.
+3. Validar implantação remota e HTTPS; acrescentar ao PDF as evidências remotas quando existirem, sem atribuir à simulação resultados da nuvem.
+4. Entregar funcionalidades futuras em incrementos com testes reais e manter CI/diagramas sincronizados.
 
-`feat/auth-jwt`, `fix/indices-mysql`, `test/cobertura-reservas`, `docs/diagramas-interacao`, `ci/testes-github`, `chore/lockfile`.
+Observabilidade e garantia transacional da auditoria continuam pendentes. Sessão revogável, paginação de catálogo e instalação reproduzível já estão implementadas. Confirmar com o professor a exigência de ProjectLibre e evidência semanal; não inventar commits ou testes históricos.
 
-Exemplos: `test(auth): validar credenciais e token expirado`, `fix(reservas): impedir cancelamento com pagamento`, `docs(cp3): consolidar PDF e matriz RF`, `ci(github): ativar cobertura`.
-
-Todos os PRs precisam de evidência de teste ou justificativa de não execução. **Não inventar histórico semanal de commits.**
+Branches seguem `feat/`, `fix/`, `test/`, `docs/`, `chore/` e `ci/`; usar commits semânticos e PR revisada conforme [CONTRIBUTING.md](../CONTRIBUTING.md).
