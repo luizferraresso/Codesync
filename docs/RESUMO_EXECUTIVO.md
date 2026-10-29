@@ -1,5 +1,7 @@
 # Resumo executivo para compartilhar com a equipe
 
+**Atualização de 28/10/2026:** as falhas reproduzidas na revisão foram corrigidas, o lockfile foi gerado e a API/MySQL 8 foram iniciados no Docker. Consulte [resultados e comandos atuais](CORRECOES_E_DOCKER_2026-10-28.md). As listas abaixo registram também pendências da consolidação original.
+
 ## O que foi produzido
 
 - **Parte 1:** arquitetura em camadas, script `01_schema.sql` (40 tabelas), seed fictício e script de verificação.
@@ -9,9 +11,8 @@
 
 ## O que ainda precisa ser testado
 
-- Instalar dependências e rodar Jest/Supertest com cobertura real; emitir `package-lock.json`.
-- Subir MySQL 8/Docker, executar scripts SQL e verificar FKs/constraints.
-- Rodar testes DB isolados, endpoints REST, autorização e logs persistidos.
+- Manter regressões unitárias/HTTP e integração real na CI; lockfile e Docker já validados localmente.
+- Ampliar testes dos fluxos de negócio conforme as funcionalidades futuras forem implementadas.
 - Validar Swagger contra a API em execução.
 - Implantar EC2/RDS, habilitar HTTPS e medir custos/segurança antes de afirmar que há deploy.
 
@@ -29,4 +30,4 @@
 
 ## Atenção
 
-O pacote é uma **base de trabalho para o grupo**, não um produto pronto. A análise sintática estática não equivale a testes de runtime; não há URL AWS nem relatórios de cobertura comprovados aqui.
+O pacote é uma **base de trabalho para o grupo**, não um produto pronto. Há relatório de cobertura e execução Docker local; ainda não há implantação AWS comprovada.

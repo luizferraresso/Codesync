@@ -12,7 +12,7 @@ module.exports = (resource) => {
     quartos:[s.quartoCreate,s.quartoPatch],
     guias:[s.guiaCreate,s.guiaPatch]
   }[resource];
-  router.get('/',optionalAuth,c.list);
+  router.get('/',optionalAuth,validate(s.pagination,'query'),c.list);
   router.get('/:id',optionalAuth,validate(z.object({id:s.bigintId}),'params'),c.get);
   router.post('/',requireAuth,validate(schemas[0]),c.create);
   router.patch('/:id',requireAuth,validate(z.object({id:s.bigintId}),'params'),validate(schemas[1]),c.patch);

@@ -5,6 +5,8 @@
 **Consolidação:** Partes 1, 2, 3 e 4 em um único repositório, 24/10/2026.  
 **Equipe:** 5 integrantes (inserir nomes reais).
 
+**Validação em 28/10/2026:** correções de segurança e integridade aplicadas; API e MySQL 8 executados em Docker. Veja [correções e execução local](docs/CORRECOES_E_DOCKER_2026-10-28.md) e a [avaliação anterior às correções](docs/AVALIACAO_PROJETO_2026-10-28.md).
+
 ## Acesso rápido
 
 | Documento | Para que serve |
@@ -20,13 +22,13 @@
 | [Roteiro AWS](aws/DEPLOY_AWS.md) | Proposta EC2+RDS, sem recursos provisionados |
 | [Rotas e perfis](docs/ROTAS_E_PERMISSOES.md) | Contrato HTTP e permissões |
 
-## 1. O que já foi desenvolvido (presença de código, NÃO execução comprovada)
+## 1. O que já foi desenvolvido
 
 - SQL MySQL 8 com **40 tabelas**, PK/FK, restrições, índices, seed local e script de verificação.
 - API Node.js 22 + Express em camadas `routes → controllers → services → repositories`.
-- Cadastro/login/troca de senha; `bcrypt`, JWT, validação Zod, middleware de autorização.
+- Cadastro/login/troca de senha; `bcrypt` com limite UTF-8, JWT revogado após troca de senha, Zod 4 e autorização.
 - Rotas de usuários, hotéis, quartos, guias, reservas em rascunho, pagamentos administrativos preliminares, ocorrências e revisão humana.
-- Auditoria de requisições mutantes com `Winston` e `tb_log`; persistência deve ser validada.
+- Auditoria de requisições mutantes com `Winston` e `tb_log`; persistência testada em MySQL, com garantia best-effort.
 - Documentação `/api-docs/` (Swagger) e `/openapi.json`.
 - Testes unitários/HTTP (Jest/Supertest), integração opcional MySQL e laboratório TDD didático.
 - Dockerfile, Compose, CI GitHub Actions e roteiro AWS (EC2, RDS, SSM/HTTPS).
@@ -62,12 +64,10 @@ referencias/     artefatos CP2 fornecidos pela equipe
 ## 5. Rodar a API local com Docker
 
 ```bash
-cp .env.example .env
-# edite .env e acrescente também MYSQL_ROOT_PASSWORD=<valor forte>
-# substitua DB_PASSWORD, JWT_SECRET e demais placeholders
-# NODE_ENV=development para testes locais
+node scripts/setup-local-env.js
+# Cria .env com segredos aleatórios; preserva um .env que já exista.
 
-docker compose up --build -d
+docker compose up --build -d --wait
 docker compose ps
 curl http://localhost:3000/health
 ```
@@ -79,7 +79,7 @@ Para executar sem Docker, suba MySQL, aplique `database/01_schema.sql` e `databa
 ## 6. Testes, cobertura e TDD
 
 ```bash
-npm install               # gerar package-lock.json e versioná-lo
+npm ci                    # instalar as versões fixadas no package-lock.json
 npm run check
 npm run integrity
 npm test
@@ -87,6 +87,7 @@ npm run test:coverage    # relatório HTML: coverage/index.html
 npm run test:tdd:red     # falha intencional para demonstrar Red
 npm run test:tdd:green
 npm run test:tdd:refactor
+npm run test:docker       # testes em Node.js 22 + MySQL 8 isolados
 ```
 
 **Testes com MySQL real isolado:** siga [docs/TESTES_E_EVIDENCIAS.md](docs/TESTES_E_EVIDENCIAS.md); serviço em `compose.integration.yaml`. Nunca executar contra RDS de produção.
@@ -128,7 +129,7 @@ git push -u origin main
 
 3. Abra as issues listadas em `docs/DIVISAO_EQUIPE_E_BACKLOG.md`, distribua responsáveis e peça PRs revisadas.
 4. Garanta commits semanais futuros; não invente commits históricos.
-5. Configurar GitHub Actions após gerar `package-lock.json` e validar as dependências.
+5. Habilitar o workflow GitHub Actions com `npm ci`, cobertura global, validação de YAML, auditoria de produção e integração MySQL 8.
 
 ## 10. Entrega para a disciplina
 
@@ -141,6 +142,6 @@ git push -u origin main
 - SQL parametrizado, bcrypt e JWT estão presentes, mas dependem de testes executados.
 - A gravação em `tb_log` é **best-effort** (erros no banco são logados e não bloqueiam a requisição). Avaliar política de auditoria em operações críticas.
 - Não rodar o seed do Compose em RDS ou produção. O bootstrap de administrador para AWS existe em `src/cli/bootstrap-admin.js`.
-- A revisão estática confirma apenas sintaxe e coerência estrutural; testes, cobertura, Docker e AWS precisam de execução real.
+- Testes e Docker foram executados localmente em 28/10/2026; AWS, carga e restauração de backups seguem pendentes. Consulte o relatório de correções para o escopo comprovado.
 
 Leia também [CONTRIBUTING.md](CONTRIBUTING.md) e [docs/REVISAO_GERAL.md](docs/REVISAO_GERAL.md) antes de abrir a primeira PR.

@@ -7,7 +7,7 @@ function auditMiddleware(req, res, next) {
     const segments = req.originalUrl.split('?')[0].split('/').filter(Boolean);
     const resource = segments[2] || 'unknown';
     const action = resource === 'auth'
-      ? (segments[3] === 'login' ? 'AUTENTICACAO' : 'CADASTRO')
+      ? ({login:'AUTENTICACAO',register:'CADASTRO',password:'ALTERACAO_SENHA'}[segments[3]] || 'AUTH_' + req.method)
       : `${resource.toUpperCase()}_${req.method}`;
     const result = res.statusCode < 400 ? 'SUCESSO' : (res.statusCode === 401 || res.statusCode === 403 ? 'NEGADO' : 'FALHA');
     void audit.record({ userId: req.user?.id_usuario || null,

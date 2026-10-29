@@ -4,7 +4,8 @@
 
 - Instalar Node.js 22 e Docker Engine/Compose. Abrir a pasta raiz do projeto.
 - Copiar `.env.example` para `.env`, ajustar credenciais fortes e `JWT_SECRET` (mínimo 32 caracteres). Para Compose, incluir `MYSQL_ROOT_PASSWORD`.
-- Instalar dependências (`npm install`) e **gerar/commitar `package-lock.json`**. O ZIP não inclui lockfile porque este ambiente não conseguiu instalar dependências npm.
+- Instalar as versões fixadas com `npm ci` (`npm.cmd ci` no PowerShell com scripts desabilitados). O projeto inclui lockfile.
+- Para preparar desenvolvimento local automaticamente, executar `node scripts/setup-local-env.js`; não sobrescreve `.env` existente.
 
 ## 2. Banco e API local
 
@@ -33,6 +34,16 @@ npm run test:tdd:refactor
 O laboratório Red é intencionalmente falho. Não confundir com falhas dos testes reais.
 
 ## 4. MySQL isolado para Jest real
+
+Forma recomendada, com Node.js 22 e MySQL 8 em contêineres:
+
+```bash
+node scripts/setup-local-env.js
+npm run test:docker
+docker compose -f compose.integration.yaml stop db_integration
+```
+
+Isso executa sintaxe, integridade/YAML, cobertura, migração, integração real, concorrência e TDD Green/Refactor. O banco isolado recebe apenas schema e status básicos, sem usuários do seed de demonstração. O volume de desenvolvimento da API não é usado. Para uma configuração existente anterior à coluna `token_version`, aplique `npm run db:migrate` com as credenciais desse banco antes de iniciar a API; a migração é idempotente e preserva os dados.
 
 O arquivo `compose.integration.yaml` cria **outro volume** e publica MySQL em `127.0.0.1:3308`.
 

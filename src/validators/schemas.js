@@ -2,17 +2,24 @@
 const { z } = require('zod');
 const required = (max = 150) => z.string().trim().min(1).max(max);
 const optional = (max = 255) => z.string().trim().max(max).nullable().optional();
-const bigintId = z.string().regex(/^[1-9]\d{0,19}$/, 'ID invalido');
-const nonnegative = z.number().finite().nonnegative();
+const bigintId = z.string().regex(/^[1-9]\d{0,19}$/, 'ID invalido')
+  .refine(value => /^[1-9]\d{0,19}$/.test(value) && BigInt(value) <= 18446744073709551615n, 'ID fora do intervalo');
+const nonnegative = z.number().finite().nonnegative().max(9999999999.99);
 const positiveInt = z.number().int().positive();
 const email = z.string().trim().toLowerCase().email().max(190);
+const password = z.string().min(10).max(72)
+  .refine(value => Buffer.byteLength(value,'utf8') <= 72, 'Senha deve ter no maximo 72 bytes UTF-8');
+const pagination = z.object({
+  limit: z.coerce.number().int().min(1).max(100).default(100),
+  offset: z.coerce.number().int().min(0).max(1000000).default(0)
+}).strict();
 const date = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine(
   x => !Number.isNaN(Date.parse(`${x}T00:00:00Z`)) && new Date(`${x}T00:00:00Z`).toISOString().slice(0,10) === x,
   'Data invalida');
 const time = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/).nullable().optional();
 const registration = z.object({
   nome: required(120), email,
-  senha: z.string().min(10).max(72),
+  senha: password,
   telefone: optional(20),
   data_nascimento: date.nullable().optional()
 }).strict();
@@ -24,7 +31,7 @@ const profilePatch = z.object({
   nome: required(120).optional(), telefone: optional(20),
   data_nascimento: date.nullable().optional()
 }).strict().refine(x => Object.keys(x).length > 0, 'Nenhuma alteracao enviada');
-const passwordPatch = z.object({ atual: z.string().min(1), nova: z.string().min(10).max(72) }).strict();
+const passwordPatch = z.object({ atual: z.string().min(1).max(200), nova: password }).strict();
 const hotelCreate = z.object({
   id_rede: bigintId.nullable().optional(), nome: required(150), descricao: optional(20000),
   comodidades: z.array(required(80)).max(100).nullable().optional(),
@@ -38,8 +45,8 @@ const quartoCreate = z.object({
   id_hotel: bigintId, nome: required(120), tipo: required(80),
   descricao: optional(20000), capacidade: positiveInt.max(500),
   quantidade_camas: positiveInt.max(500).nullable().optional(),
-  tamanho_m2: z.number().positive().nullable().optional(), valor_diaria: nonnegative,
-  quantidade_disponivel: z.number().int().nonnegative().max(100000).optional(),
+  tamanho_m2: z.number().positive().max(99999.99).nullable().optional(), valor_diaria: nonnegative,
+  quantidade_disponivel: z.number().int().nonnegative().max(65535).optional(),
   status: z.enum(['DISPONIVEL','INDISPONIVEL','MANUTENCAO']).optional()
 }).strict();
 const quartoPatch = quartoCreate.omit({id_hotel: true}).partial().strict();
@@ -73,7 +80,7 @@ const occurrenceReview = z.object({
   analise: required(5000)
 }).strict();
 module.exports = {
-  bigintId, registration, staffCreate, login, profilePatch, passwordPatch,
+  bigintId, password, pagination, registration, staffCreate, login, profilePatch, passwordPatch,
   hotelCreate, hotelPatch, quartoCreate, quartoPatch,
   guiaCreate, guiaPatch, reservaCreate, reservaPatch,
   pagamentoCreate, occurrenceCreate, occurrenceReview

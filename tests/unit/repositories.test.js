@@ -1,0 +1,28 @@
+jest.mock('../../src/config/database',()=>({execute:jest.fn(),query:jest.fn()}));
+const pool=require('../../src/config/database');
+const sql=require('../../src/repositories/sql.repository');
+const reservations=require('../../src/repositories/reservation.repository');
+const users=require('../../src/repositories/user.repository');
+const access=require('../../src/repositories/access.repository');
+beforeEach(()=>{jest.resetAllMocks();pool.execute.mockResolvedValue([[{id_usuario:'1'}]]);pool.query.mockResolvedValue([[]]);});
+test('SQL parametrizado preserva valor com tentativa de injecao',async()=>{
+  await sql.findById('tb_usuario','id_usuario',"1 OR 1=1");
+  expect(pool.execute).toHaveBeenCalledWith(expect.not.stringContaining('OR 1=1'),['1 OR 1=1']);
+});
+test('rejeita identificadores SQL arbitrarios',async()=>await expect(sql.list('tb_usuario; DROP TABLE tb_usuario')).rejects.toThrow('Identificador SQL invalido'));
+test('paginacao aplica filtro antes do limite',async()=>{await sql.list('tb_hotel',{status:'ATIVO'},pool,{limit:10,offset:20});expect(pool.execute).toHaveBeenCalledWith('SELECT * FROM `tb_hotel` WHERE `status` = ? ORDER BY 1 DESC LIMIT ? OFFSET ?',['ATIVO','10','20']);});
+test('paginacao insegura nao produz consulta',async()=>{await expect(sql.list('tb_hotel',{},pool,{limit:'1; DROP',offset:0})).rejects.toThrow('Paginacao invalida');expect(pool.execute).not.toHaveBeenCalled();});
+test('gravacao parametriza dados',async()=>{pool.execute.mockResolvedValue([{insertId:8}]);expect(await sql.create('tb_hotel',{nome:"a' OR 1=1"})).toBe('8');expect(pool.execute.mock.calls[0][1]).toEqual(["a' OR 1=1"]);});
+test('rejeita INSERT vazio e ignora UPDATE vazio',async()=>{await expect(sql.create('tb_hotel',{})).rejects.toThrow('Sem dados');expect(await sql.update('tb_hotel','id_hotel','1',{})).toBe(0);expect(pool.execute).not.toHaveBeenCalled();});
+test('UPDATE e DELETE usam chave parametrizada',async()=>{pool.execute.mockResolvedValue([{affectedRows:1}]);expect(await sql.update('tb_hotel','id_hotel','1',{nome:'Teste'})).toBe(1);expect(await sql.remove('tb_hotel','id_hotel','1')).toBe(1);});
+test('consulta inexistente retorna null',async()=>{pool.execute.mockResolvedValue([[]]);expect(await sql.findById('tb_usuario','id_usuario','9')).toBeNull();expect(await users.byEmail('x@example.test')).toBeNull();});
+test('perfil publico nao seleciona hash nem versao de sessao',async()=>{await users.byId('1');const statement=pool.execute.mock.calls[0][0];expect(statement).not.toMatch(/senha_hash|token_version/);});
+test('autenticacao seleciona versao de sessao',async()=>{await users.byId('1',true);expect(pool.execute.mock.calls[0][0]).toContain('token_version');});
+test('troca de senha e revogacao ocorrem no mesmo UPDATE condicional',async()=>{pool.execute.mockResolvedValue([{affectedRows:1}]);expect(await users.changePassword('1','novoHash','anteriorHash')).toBe(1);expect(pool.execute).toHaveBeenCalledWith(expect.stringContaining('token_version=token_version+1'),['novoHash','1','anteriorHash']);});
+test('usuarios listados nao expõem hash',async()=>{await users.all();expect(pool.query.mock.calls[0][0]).not.toContain('senha_hash');});
+test('usuario pode ser criado e atualizado',async()=>{pool.execute.mockResolvedValue([{insertId:2,affectedRows:1}]);expect(await users.create({nome:'Teste'})).toBe('2');expect(await users.update('2',{nome:'Outro'})).toBe(1);});
+test('vinculo de hotel exige ativo=1',async()=>{expect(await access.managesHotel('1','2')).toBe(true);expect(pool.execute.mock.calls[0][0]).toContain('ativo = 1');});
+test('reserva bloqueada usa executor transacional',async()=>{await reservations.find('1',pool,true);expect(pool.execute.mock.calls[0][0]).toContain('FOR UPDATE');});
+test.each([{id_usuario:'1',tipo_usuario:'ADMIN'},{id_usuario:'2',tipo_usuario:'CLIENTE'}])('lista reservas por escopo %j',async user=>{await reservations.listFor(user);expect(pool.execute.mock.calls[0][1]).toEqual(user.tipo_usuario==='ADMIN'?[]:['2']);});
+test('status ausente falha explicitamente',async()=>{pool.execute.mockResolvedValue([[]]);await expect(reservations.statusId('PENDENTE')).rejects.toThrow('Falta status');});
+test('status e existencia de pagamento consultados',async()=>{pool.execute.mockResolvedValueOnce([[{id_status_reserva:'1'}]]).mockResolvedValueOnce([[]]);expect(await reservations.statusId('PENDENTE')).toBe('1');expect(await reservations.anyPayment('2')).toBe(false);});

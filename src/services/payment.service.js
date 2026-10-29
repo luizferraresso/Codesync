@@ -1,7 +1,7 @@
 'use strict';
 const pool = require('../config/database');
 const { fail } = require('../utils/errors');
-const { get: reservation } = require('./reservation.service');
+const reservations = require('../repositories/reservation.repository');
 async function get(user,id) {
   const [rows] = await pool.execute(`SELECT p.*, s.codigo AS status_codigo, r.id_usuario
     FROM tb_pagamento p JOIN tb_status_pagamento s ON s.id_status_pagamento = p.id_status_pagamento
@@ -25,14 +25,16 @@ async function list(user) {
 }
 async function createInternal(user,data) {
   if (user.tipo_usuario !== 'ADMIN') fail(403,'ACESSO_NEGADO','Criacao de pagamento exige administrador');
-  const r = await reservation(user,data.id_reserva);
-  if (r.status_codigo !== 'PENDENTE') fail(409,'ESTADO_INVALIDO','Reserva nao esta pendente');
-  const [status] = await pool.execute(`SELECT id_status_pagamento FROM tb_status_pagamento WHERE codigo = 'PENDENTE'`);
-  if (!status[0]) fail(500,'CONFIGURACAO_INCOMPLETA','Execute os inserts de status do seed');
   const tx = await pool.getConnection();
   let id;
   try {
     await tx.beginTransaction();
+    // Pagamento e cancelamento serializam pela mesma reserva antes de alterar seu estado.
+    const r = await reservations.find(data.id_reserva,tx,true);
+    if (!r) fail(404,'NAO_ENCONTRADO','Reserva nao encontrada');
+    if (r.status_codigo !== 'PENDENTE') fail(409,'ESTADO_INVALIDO','Reserva nao esta pendente');
+    const [status] = await tx.execute(`SELECT id_status_pagamento FROM tb_status_pagamento WHERE codigo = 'PENDENTE'`);
+    if (!status[0]) fail(500,'CONFIGURACAO_INCOMPLETA','Execute os inserts de status do seed');
     const [result] = await tx.execute(`INSERT INTO tb_pagamento (id_reserva,id_status_pagamento,valor,metodo)
       VALUES (?,?,?,?)`,[data.id_reserva,status[0].id_status_pagamento,data.valor,data.metodo ?? null]);
     id=String(result.insertId);
