@@ -1,8 +1,8 @@
 # Implantação acadêmica na AWS — HospedJá / Checkpoint 3
 
-**Situação:** roteiro reproduzível; não constitui prova de deploy executado ou URL pública existente. Nenhuma conta ou recurso AWS foi acessado por esta entrega.
+**Situação em 29/10/2026:** deploy executado na EC2/RDS existentes. [Health HTTPS](https://44.201.28.10/health), [Swagger](https://44.201.28.10/api-docs/) e 19 verificações públicas aprovados; veja o [registro da operação, backup e renovação](../docs/DEPLOY_AWS_2026-10-29.md). As instruções de provisionamento abaixo continuam como referência; não criar recursos duplicados para repetir a atualização.
 
-**Revisão de 28/10/2026:** o patch enviado por um integrante relata uma implantação, mas não fornece acesso ou endereço para conferência. O código atual foi testado localmente em MySQL 8.4; o procedimento de atualização inclui preflight e rollback. Consulte [revisão do patch](../docs/REVISAO_PATCH_AWS_2026-10-28.md). Não marcar execução AWS como comprovada antes da validação remota.
+**Histórico:** em 28/10, o patch do integrante ainda não permitia comprovação remota. Em 29/10, o acesso IAM autorizado permitiu inspecionar o ambiente, aplicar a migração e implantar `eb05c89` com preflight e candidato saudável. Consulte a [revisão original do patch](../docs/REVISAO_PATCH_AWS_2026-10-28.md) para o contexto anterior.
 
 ## Arquitetura escolhida e justificativa
 
@@ -10,7 +10,7 @@
 - **RDS MySQL 8.4** `db.t4g.micro` (se disponível na região/conta), Single-AZ e armazenamento gp3 inicial mínimo admitido pelo serviço; banco com endpoint **privado** e backups automáticos. Segundo o [calendário oficial RDS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/MySQL.Concepts.VersionMgmt.html), o suporte padrão da versão 8.0 terminou em 31/07/2026; avaliar Extended Support se mantiver um banco 8.0 existente.
 - **VPC** padrão ou dedicada, EC2 em subnet pública, RDS **não publicamente acessível** em grupo de subnets privadas distribuídas entre ao menos duas AZ. Só SG-EC2 pode acessar SG-RDS TCP 3306.
 - **SSM Parameter Store / SecureString** com instance profile IAM restrito para `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `JWT_SECRET`. Arquivos locais `/etc/hospedja/api.env` ficam na EC2 com permissão `0600`, não são commitados. AWS recomenda Secrets Manager para rotação automática em produção; Parameter Store é escolha econômica de laboratório.
-- **HTTPS** com Nginx e Certbot/Let's Encrypt, quando a equipe tiver domínio DNS. Sem domínio, um endereço `http://IP_PUBLICO/health` só serve para avaliação temporária e NÃO fornece TLS, portanto não deve receber logins ou credenciais.
+- **HTTPS** com Nginx e Certbot/Let's Encrypt. No ambiente atual, sem domínio, foi emitido certificado para o IP público usando Certbot 5.4.0/perfil `shortlived`; renovação a cada seis horas e ensaio aprovados. O IP pode mudar ao parar/iniciar a EC2: acompanhar e ajustar o certificado/endereço quando necessário. HTTP sem TLS não deve receber credenciais.
 - Região da simulação de custos: `us-east-1` (Norte da Virgínia). Para público no Brasil considere `sa-east-1` com preços geralmente diferentes; calcule antes de criar.
 
 ## 1. Antes de criar recursos
@@ -48,7 +48,7 @@ Use DNS privado do endpoint RDS sem IP fixo. Na versão entregue, a API aceita c
 ## 3. EC2 e permissões
 
 1. Inicie Ubuntu 24.04 na EC2 micro; marque Security Group e IAM Role com permissão mínima SSM. Evite IP elástico ocioso.
-2. Instale Git, Docker Engine + plugin Compose, AWS CLI v2, Nginx, Certbot/`python3-certbot-nginx`, MySQL client. Consulte instruções oficiais vigentes do sistema operacional e do Docker antes da instalação.
+2. Instale Git, Docker Engine com **Buildx/BuildKit**, plugin Compose, AWS CLI v2, Nginx e MySQL client. O Dockerfile usa `COPY --chmod`, que exige BuildKit; na EC2 Ubuntu com pacote `docker.io`, foi instalado `docker-buildx`. Para HTTPS com domínio, usar Certbot/`python3-certbot-nginx`; para IP, seguir a configuração específica do relatório de 29/10. Consulte as instruções oficiais vigentes antes da instalação.
 3. Clonar código do repositório PRIVADO da equipe. **Nunca copie arquivo `.env` local, seed fictícia, tokens, senhas ou arquivos de cobertura para repositório público.**
    Se arquivos do clone tiverem modo restrito, não aplicar `chmod -R a+rX` no repositório todo: esse comando também pode expor arquivos privados. O Dockerfile atribui os arquivos da aplicação ao usuário `node` dentro da imagem e define leitura do manifesto de pacotes, sem alterar os segredos do host.
 4. No Systems Manager → Parameter Store (região correta), crie: `/hospedja/prod/DB_HOST` (RDS endpoint), `/hospedja/prod/DB_USER`, `/hospedja/prod/DB_PASSWORD`, `/hospedja/prod/JWT_SECRET`. Use `SecureString` em secrets; para JWT: gere 32+ bytes aleatórios por `openssl rand -hex 32` e cole de maneira segura no console, sem commit.
@@ -70,6 +70,8 @@ O procedimento exige checkout limpo e cria imagem identificada pelo commit. Ante
 Validação sem AWS: `npm run test:deploy` executa sete cenários com comandos simulados em contêiner isolado; `docker compose -f compose.aws-validation.yaml run --build --rm tests` executa a suíte em MySQL 8.4 sem publicar portas. Ao terminar, use `docker compose -f compose.aws-validation.yaml stop db` para parar somente esse banco de validação.
 
 ## 5. Nginx / domínio / HTTPS
+
+**Ambiente atual sem domínio:** certificado IP já configurado e renovação testada. Consulte os caminhos, timer e limitações no [registro de 29/10](../docs/DEPLOY_AWS_2026-10-29.md). Os passos a seguir são a alternativa com domínio; não substituir a configuração IP por `api.example.com`.
 
 1. Registre ou use um domínio sob controle da equipe, crie registro DNS A para IP público da EC2 (IP pode mudar se instância for reiniciada sem IP elástico).
 2. Substitua `api.example.com` por seu domínio em `aws/nginx-hospedja.conf` e copie para `/etc/nginx/sites-available/hospedja`, ative em `sites-enabled` e rode `sudo nginx -t && sudo systemctl reload nginx`.

@@ -5,6 +5,8 @@
 **Consolidação:** Partes 1, 2, 3 e 4 em um único repositório, 24/10/2026.  
 **Equipe:** 5 integrantes (inserir nomes reais).
 
+**Deploy verificado em 29/10/2026:** [API/health](https://44.201.28.10/health) e [Swagger](https://44.201.28.10/api-docs/) disponíveis por HTTPS, com RDS privado, migração aplicada e 19 verificações operacionais aprovadas. Consulte o [registro do deploy e cuidados de operação](docs/DEPLOY_AWS_2026-10-29.md). O PDF de 28/10 é anterior a essa implantação.
+
 **Validação em 28/10/2026:** correções de segurança e integridade aplicadas; API e MySQL 8 executados em Docker. Veja [correções e execução local](docs/CORRECOES_E_DOCKER_2026-10-28.md) e a [avaliação anterior às correções](docs/AVALIACAO_PROJETO_2026-10-28.md).
 
 ## Acesso rápido
@@ -20,7 +22,8 @@
 | [Diagramas](docs/DIAGRAMAS_INTERACAO.md) | Seis diagramas de interação `.drawio` editáveis |
 | [Roteiro de apresentação](docs/ROTEIRO_APRESENTACAO_6_MINUTOS.md) | Fala dividida entre os cinco colegas |
 | [PDF único](entrega/HospedJa_Checkpoint3_Documento_Unico.pdf) | Relatório consolidado atualizado em 28/10/2026 |
-| [Roteiro AWS](aws/DEPLOY_AWS.md) | Proposta EC2+RDS, sem recursos provisionados |
+| [Deploy AWS verificado](docs/DEPLOY_AWS_2026-10-29.md) | URL pública, migração, HTTPS, evidências e recuperação |
+| [Roteiro AWS](aws/DEPLOY_AWS.md) | Procedimento EC2/RDS e limites de operação |
 | [Rotas e perfis](docs/ROTAS_E_PERMISSOES.md) | Contrato HTTP e permissões |
 
 ## 1. O que já foi desenvolvido
@@ -110,9 +113,9 @@ Base URL: `http://localhost:3000/api/v1`. Autenticação: `Authorization: Bearer
 
 O projeto mantém serviços e validações separados da camada HTTP. `src/docs/openapi.yaml` é a especificação detalhada.
 
-## 8. AWS: NÃO implantado
+## 8. AWS: implantação verificada em 29/10/2026
 
-`aws/DEPLOY_AWS.md` documenta EC2 + RDS MySQL privado, SSM Parameter Store e Nginx/HTTPS. **Ainda não foi criado nenhum recurso AWS com esta entrega, nem obtida URL pública ou custo observado.** Só seguir esse roteiro após autorização da equipe e orçamento aprovado.
+O backend `eb05c89` foi implantado na EC2 existente com RDS MySQL privado, Parameter Store e Nginx/HTTPS. [Swagger público](https://44.201.28.10/api-docs/) e 19 verificações operacionais passaram. Veja [evidências, backup, renovação e limites](docs/DEPLOY_AWS_2026-10-29.md) e o [roteiro operacional](aws/DEPLOY_AWS.md). Custos efetivos e orçamento não foram auditados nesta operação.
 
 ## 9. GitHub: como compartilhar com os cinco integrantes
 
@@ -143,6 +146,6 @@ git push -u origin main
 - SQL parametrizado, bcrypt e JWT estão presentes, mas dependem de testes executados.
 - A gravação em `tb_log` é **best-effort** (erros no banco são logados e não bloqueiam a requisição). Avaliar política de auditoria em operações críticas.
 - Não rodar o seed do Compose em RDS ou produção. O bootstrap de administrador para AWS existe em `src/cli/bootstrap-admin.js`.
-- Testes e Docker foram executados localmente em 28/10/2026; AWS, carga e restauração de backups seguem pendentes. Consulte o relatório de correções para o escopo comprovado.
+- Testes e Docker foram executados localmente em 28/10/2026; deploy AWS e 19 verificações públicas passaram em 29/10. Carga, restauração de backups e funcionalidades futuras continuam pendentes.
 
 Leia também [CONTRIBUTING.md](CONTRIBUTING.md) e [docs/REVISAO_GERAL.md](docs/REVISAO_GERAL.md) antes de abrir a primeira PR.

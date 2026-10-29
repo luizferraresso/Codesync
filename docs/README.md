@@ -2,6 +2,8 @@
 
 Revisão de 28/10/2026, comparada ao backend integrado no commit `0c4aa05` e às configurações presentes no repositório. Os documentos desta pasta descrevem o escopo efetivo; tabelas modeladas não significam APIs completas.
 
+**Atualização operacional de 29/10/2026:** o [deploy AWS foi executado e verificado](DEPLOY_AWS_2026-10-29.md), com o commit `eb05c89`, HTTPS no IP público e 19 verificações reais aprovadas. As referências a acesso/deploy pendentes nos relatórios datados de 28/10 e no PDF pertencem àquela revisão; o adendo de 29/10 descreve a situação remota atual.
+
 ## Situação verificada
 
 | Item | Evidência e limite |
@@ -13,9 +15,9 @@ Revisão de 28/10/2026, comparada ao backend integrado no commit `0c4aa05` e às
 | Banco | 40 tabelas, 68 FKs e migração aditiva `token_version`; disponibilidade por período ainda pendente |
 | Docker | API/banco locais validados, imagem com usuário `node`, bancos de testes isolados |
 | GitHub | [Issue #2](https://github.com/luizferraresso/Codesync/issues/2) e [PR #3](https://github.com/luizferraresso/Codesync/pull/3), em rascunho na consulta desta revisão; CI de push e PR aprovada |
-| AWS | Código preparado e 7 cenários de deploy/rollback simulados aprovados; acesso à conta e validação remota pendentes |
+| AWS | EC2/RDS existentes atualizados em 29/10; TLS público e do banco verificados, migração aplicada, 19 verificações operacionais aprovadas; restauração de backup ainda não ensaiada |
 | Diagramas | 6 modelos editáveis, fontes DOT e previews PNG sincronizados com o código |
-| Entrega acadêmica | PDF regenerado com fontes/diagramas e evidências reais; identificação e revisão acadêmica final pendentes |
+| Entrega acadêmica | PDF de 28/10 revisado; relatório de deploy de 29/10 disponível como adendo; identificação e consolidação acadêmica final pendentes |
 
 Execuções CI verificadas: [Pull Request](https://github.com/luizferraresso/Codesync/actions/runs/40803522140) e [push](https://github.com/luizferraresso/Codesync/actions/runs/40803466021). Isso comprova as verificações desses commits, não implantação na AWS.
 
@@ -39,7 +41,8 @@ Execuções CI verificadas: [Pull Request](https://github.com/luizferraresso/Cod
 | [Apresentação](ROTEIRO_APRESENTACAO_6_MINUTOS.md) | Roteiro alinhado ao estado comprovado |
 | [PDF e entrega](PDF_UNICO_E_ENTREGA.md) | Conteúdo, geração reproduzível e revisão acadêmica final |
 | [Correções e Docker](CORRECOES_E_DOCKER_2026-10-28.md) | Detalhes técnicos das correções e execução |
-| [Roteiro AWS](../aws/DEPLOY_AWS.md) | Preflight, migração e rollback; execução remota pendente |
+| [Deploy AWS verificado](DEPLOY_AWS_2026-10-29.md) | Evidências de 29/10, HTTPS, migração, backup e renovação |
+| [Roteiro AWS](../aws/DEPLOY_AWS.md) | Preflight, migração, rollback e procedimentos operacionais |
 
 ## Registros históricos
 
