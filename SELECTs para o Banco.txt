@@ -1,0 +1,16 @@
+1.0-Provar a Segurança da API (Zero Vazamento de Senhas)
+docker compose exec db mysql -u hospedja_app -p hospedja -e "SELECT COUNT(*) AS senhas_vazadas FROM tb_log WHERE detalhes LIKE '%SenhaForte123%' OR detalhes LIKE '%123456%';"
+
+2.0-Mostrar o Fluxo Real (Reserva Criada)
+docker compose exec db mysql -u hospedja_app -p hospedja -e "SELECT * FROM tb_reserva ORDER BY id_reserva DESC LIMIT 1;"
+
+3.0-Arquitetura: Proteção de Perfis (RBAC) e Mass Assignment
+docker compose exec db mysql -u hospedja_app -p hospedja -e "DESCRIBE tb_usuario;"
+3.1-A promoção manual via SQL
+docker compose exec db mysql -u hospedja_app -p hospedja -e "UPDATE tb_usuario SET tipo_usuario = 'GUIA' WHERE email = 'Victor@guia.com';"
+
+4.0-Filtrar Exatamente os Logs de Cadastro, Login e Reserva
+docker compose exec db mysql -u hospedja_app -p hospedja -e "SELECT id_log, id_usuario, acao, entidade, resultado, data_hora FROM tb_log WHERE acao IN ('CADASTRO', 'AUTENTICACAO', 'RESERVAS_POST', 'PENALIDADES_POST') ORDER BY id_log DESC LIMIT 15;"
+
+5.0-Mostre a estrutura dos Itens da Reserva
+docker compose exec db mysql -u hospedja_app -p hospedja -e "SELECT r.id_reserva, r.codigo_confirmacao, r.valor_total, ir.* FROM tb_reserva r INNER JOIN tb_item_reserva ir ON r.id_reserva = ir.id_reserva ORDER BY r.id_reserva DESC LIMIT 1;"
