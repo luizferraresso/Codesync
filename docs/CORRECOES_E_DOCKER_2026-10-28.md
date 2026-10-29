@@ -1,5 +1,7 @@
 # Correções e execução Docker — 28/10/2026
 
+**Atualização documental:** resultados consolidados em [README.md](README.md). A publicação ocorreu na [PR #3](https://github.com/luizferraresso/Codesync/pull/3), com CI aprovada e revisão/merge pendentes na consulta desta revisão.
+
 As falhas reproduzidas na avaliação anterior foram corrigidas. API e banco foram executados no Docker Desktop, usando **Node.js 22.23.4 e MySQL 8.0.46**, com healthchecks saudáveis. Este documento atualiza o estado descrito em `AVALIACAO_PROJETO_2026-10-28.md`, que permanece como registro histórico.
 
 ## Alterações aplicadas
@@ -31,7 +33,7 @@ O tratamento das senhas não altera silenciosamente hashes existentes. Contas an
 | Unitários/HTTP | 142 testes aprovados em 13 suítes |
 | Integração real MySQL 8 | 7 testes aprovados em 2 suítes |
 | TDD Green / Refactor | 4 aprovados em cada etapa |
-| Cobertura de todo `src` | 90,07% linhas; 87,09% instruções; 83,68% ramificações; 73,18% funções |
+| Cobertura de todo `src`, após integrar a main | 90,09% linhas; 87,10% instruções; 83,68% ramificações; 73,18% funções |
 | Auditoria das dependências de produção | Zero alertas em `npm audit --omit=dev` |
 | API em execução | `/health` 200 com consulta ao banco; `/api-docs/` 200 |
 | Smoke HTTP na imagem final | Cadastro, login, perfil, troca de senha, revogação, novo login, payload 413 e paginação aprovados; usuário fictício removido |
@@ -102,4 +104,4 @@ O banco precisa estar iniciado. A migração inspeciona a coluna, serializa exec
 
 As correções tratam os defeitos e a infraestrutura de validação da avaliação anterior. A implementação dos módulos futuros continua no backlog: pesquisa por destino/datas, inventário por período, cotação, confirmação real de reservas, Mercado Pago/webhooks/estorno, regra dos sete dias, SAC/DeepSeek, aplicação manual de penalidades e interface.
 
-Auditoria continua best-effort; garantia transacional/outbox, testes de carga, backup/restauração, contrato completo das respostas OpenAPI e implantação AWS ainda precisam de desenvolvimento e validação. O workflow GitHub Actions foi atualizado, mas sua execução remota depende de publicar as alterações no repositório. O PDF acadêmico original continua preliminar e deve receber as novas evidências antes da entrega.
+Auditoria continua best-effort; garantia transacional/outbox, testes de carga, backup/restauração, contrato completo das respostas OpenAPI e implantação AWS ainda precisam de desenvolvimento e validação. O workflow GitHub Actions foi publicado e as execuções de push e PR passaram; ainda falta revisão/merge da PR #3. O PDF consolidado foi regenerado com documentação, diagramas e evidências atuais; identificação da equipe e conferência acadêmica final permanecem pendentes.

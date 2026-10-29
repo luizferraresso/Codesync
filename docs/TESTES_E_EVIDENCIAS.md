@@ -1,5 +1,7 @@
 # Plano prático de validação e evidências
 
+**Atualização: 28/10/2026.** Resultados executados: 142 testes unitários/HTTP, 7 de integração e 90,09% linhas de todo src; [detalhes e limites](VERIFICACAO_E_LIMITACOES.md). Os checklists abaixo são roteiros de reprodução, não evidência de que cada cenário foi exercitado integralmente.
+
 ## 1. Preparação
 
 - Instalar Node.js 22 e Docker Engine/Compose. Abrir a pasta raiz do projeto.
@@ -10,7 +12,7 @@
 ## 2. Banco e API local
 
 ```bash
-docker compose up --build -d
+docker compose up --build -d --wait
 docker compose ps
 curl -i http://localhost:3000/health
 curl -i http://localhost:3000/openapi.json
@@ -57,6 +59,16 @@ npm run test:db
 ```
 
 O teste de integração cria dados temporários e limpa ao final. **Não apontar para um banco de produção.**
+
+Compatibilidade AWS, sem acesso à conta:
+
+```bash
+docker compose -f compose.aws-validation.yaml run --build --rm tests
+docker compose -f compose.aws-validation.yaml stop db
+npm run test:deploy
+```
+
+O primeiro usa MySQL 8.4 isolado, sem publicar portas. O último executa sete cenários com comandos AWS/Docker simulados; não provisiona recursos e não comprova o ambiente remoto.
 
 ## 5. Checklist de smoke tests HTTP
 

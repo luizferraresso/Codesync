@@ -1,63 +1,66 @@
 <?xml version='1.0' encoding='utf-8'?>
-<mxfile host="app.diagrams.net" modified="2026-10-24T00:00:00.000Z" agent="HospedJa CodeSync" version="24.7.17" type="device">
-  <diagram name="Reservas preliminares e pagamentos" id="04_reservas_pagamentos">
-    <mxGraphModel dx="1260" dy="980" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1350" math="0" shadow="0" background="#FFFFFF">
+<mxfile host="app.diagrams.net" modified="2026-10-28T00:00:00.000Z" agent="HospedJa CodeSync" version="24.7.17" type="device">
+  <diagram name="Rascunhos e lançamentos administrativos" id="04_reservas_pagamentos">
+    <mxGraphModel dx="1000" dy="1510" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1000" pageHeight="1510" math="0" shadow="0" background="#FFFFFF">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="ReservationRoutes" value="ReservationRoutes&#10;GET /&#10;POST /&#10;PATCH /:id&#10;DELETE /:id" style="rounded=1;whiteSpace=wrap;html=0;align=center;verticalAlign=middle;fillColor=#F6F8FB;strokeColor=#48637C;fontColor=#12253A;fontSize=14;fontFamily=Arial;spacing=12;arcSize=8;" vertex="1" parent="1">
-          <mxGeometry x="340" y="55" width="240" height="123" as="geometry" />
+        <mxCell id="ReservationRoutes" value="ReservationRoutes&#10;GET / · GET /:id&#10;POST / · PATCH /:id&#10;DELETE /:id" style="rounded=1;whiteSpace=wrap;html=0;align=center;verticalAlign=middle;fillColor=#F6F8FB;strokeColor=#48637C;fontColor=#12253A;fontSize=14;fontFamily=Arial;spacing=12;arcSize=8;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="190" y="60" width="280" height="124" />
         </mxCell>
-        <mxCell id="PaymentRoutes" value="PaymentRoutes&#10;GET /&#10;POST /" style="rounded=1;whiteSpace=wrap;html=0;align=center;verticalAlign=middle;fillColor=#F6F8FB;strokeColor=#48637C;fontColor=#12253A;fontSize=14;fontFamily=Arial;spacing=12;arcSize=8;" vertex="1" parent="1">
-          <mxGeometry x="620" y="55" width="240" height="123" as="geometry" />
+        <mxCell id="PaymentRoutes" value="PaymentRoutes&#10;GET / · GET /:id&#10;POST / (ADMIN)" style="rounded=1;whiteSpace=wrap;html=0;align=center;verticalAlign=middle;fillColor=#F6F8FB;strokeColor=#48637C;fontColor=#12253A;fontSize=14;fontFamily=Arial;spacing=12;arcSize=8;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="530" y="60" width="280" height="124" />
         </mxCell>
         <mxCell id="ReservationController" value="ReservationController&#10;+ create()&#10;+ cancel()" style="rounded=1;whiteSpace=wrap;html=0;align=center;verticalAlign=middle;fillColor=#F6F8FB;strokeColor=#48637C;fontColor=#12253A;fontSize=14;fontFamily=Arial;spacing=12;arcSize=8;" vertex="1" parent="1">
-          <mxGeometry x="340" y="295" width="240" height="123" as="geometry" />
+          <mxGeometry as="geometry" x="190" y="304" width="280" height="101" />
         </mxCell>
-        <mxCell id="PaymentController" value="PaymentController&#10;+ create()&#10;+ get()" style="rounded=1;whiteSpace=wrap;html=0;align=center;verticalAlign=middle;fillColor=#F6F8FB;strokeColor=#48637C;fontColor=#12253A;fontSize=14;fontFamily=Arial;spacing=12;arcSize=8;" vertex="1" parent="1">
-          <mxGeometry x="620" y="295" width="240" height="123" as="geometry" />
+        <mxCell id="PaymentController" value="PaymentController&#10;+ create() · get()" style="rounded=1;whiteSpace=wrap;html=0;align=center;verticalAlign=middle;fillColor=#F6F8FB;strokeColor=#48637C;fontColor=#12253A;fontSize=14;fontFamily=Arial;spacing=12;arcSize=8;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="530" y="304" width="280" height="101" />
         </mxCell>
-        <mxCell id="ReservationService" value="ReservationService&#10;+ create()&#10;+ cancelPendingDraft()" style="rounded=1;whiteSpace=wrap;html=0;align=center;verticalAlign=middle;fillColor=#F6F8FB;strokeColor=#48637C;fontColor=#12253A;fontSize=14;fontFamily=Arial;spacing=12;arcSize=8;" vertex="1" parent="1">
-          <mxGeometry x="340" y="535" width="240" height="123" as="geometry" />
+        <mxCell id="ReservationService" value="ReservationService&#10;+ create()&#10;+ cancelPendingDraft()&#10;rascunho PENDENTE" style="rounded=1;whiteSpace=wrap;html=0;align=center;verticalAlign=middle;fillColor=#F6F8FB;strokeColor=#48637C;fontColor=#12253A;fontSize=14;fontFamily=Arial;spacing=12;arcSize=8;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="190" y="525" width="280" height="124" />
         </mxCell>
-        <mxCell id="PaymentService" value="PaymentService&#10;+ createInternal()&#10;+ get()" style="rounded=1;whiteSpace=wrap;html=0;align=center;verticalAlign=middle;fillColor=#F6F8FB;strokeColor=#48637C;fontColor=#12253A;fontSize=14;fontFamily=Arial;spacing=12;arcSize=8;" vertex="1" parent="1">
-          <mxGeometry x="620" y="535" width="240" height="123" as="geometry" />
+        <mxCell id="PaymentService" value="PaymentService&#10;+ createInternal() · get()&#10;lançamento PENDENTE&#10;sem cobrança externa" style="rounded=1;whiteSpace=wrap;html=0;align=center;verticalAlign=middle;fillColor=#F6F8FB;strokeColor=#48637C;fontColor=#12253A;fontSize=14;fontFamily=Arial;spacing=12;arcSize=8;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="530" y="525" width="280" height="124" />
         </mxCell>
-        <mxCell id="ReservationRepository" value="ReservationRepository&#10;+ find()&#10;+ anyPayment()" style="rounded=1;whiteSpace=wrap;html=0;align=center;verticalAlign=middle;fillColor=#F6F8FB;strokeColor=#48637C;fontColor=#12253A;fontSize=14;fontFamily=Arial;spacing=12;arcSize=8;" vertex="1" parent="1">
-          <mxGeometry x="340" y="775" width="240" height="123" as="geometry" />
+        <mxCell id="ReservationRepository" value="ReservationRepository&#10;+ find(id,tx,true)&#10;+ anyPayment() · statusId()&#10;SELECT ... FOR UPDATE" style="rounded=1;whiteSpace=wrap;html=0;align=center;verticalAlign=middle;fillColor=#F6F8FB;strokeColor=#48637C;fontColor=#12253A;fontSize=14;fontFamily=Arial;spacing=12;arcSize=8;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="360" y="769" width="280" height="124" />
         </mxCell>
-        <mxCell id="MySQLPool" value="MySQLPool&#10;+ execute()" style="rounded=1;whiteSpace=wrap;html=0;align=center;verticalAlign=middle;fillColor=#F6F8FB;strokeColor=#48637C;fontColor=#12253A;fontSize=14;fontFamily=Arial;spacing=12;arcSize=8;" vertex="1" parent="1">
-          <mxGeometry x="620" y="775" width="240" height="123" as="geometry" />
+        <mxCell id="MySQLPool" value="mysql2 Pool / Connection&#10;+ getConnection()&#10;+ beginTransaction()&#10;+ commit() · rollback()" style="rounded=1;whiteSpace=wrap;html=0;align=center;verticalAlign=middle;fillColor=#F6F8FB;strokeColor=#48637C;fontColor=#12253A;fontSize=14;fontFamily=Arial;spacing=12;arcSize=8;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="360" y="1013" width="280" height="124" />
         </mxCell>
-        <mxCell id="MySQL8" value="MySQL8&#10;tb_reserva&#10;tb_pagamento&#10;historicos" style="rounded=1;whiteSpace=wrap;html=0;align=center;verticalAlign=middle;fillColor=#F6F8FB;strokeColor=#48637C;fontColor=#12253A;fontSize=14;fontFamily=Arial;spacing=12;arcSize=8;" vertex="1" parent="1">
-          <mxGeometry x="480" y="1015" width="240" height="123" as="geometry" />
+        <mxCell id="MySQL8" value="MySQL 8.0 / 8.4&#10;tb_reserva · tb_reserva_status&#10;tb_pagamento&#10;tb_pagamento_status" style="rounded=1;whiteSpace=wrap;html=0;align=center;verticalAlign=middle;fillColor=#F6F8FB;strokeColor=#48637C;fontColor=#12253A;fontSize=14;fontFamily=Arial;spacing=12;arcSize=8;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="360" y="1257" width="280" height="124" />
         </mxCell>
-        <mxCell id="edge_1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;endArrow=open;endFill=0;strokeColor=#53728D;strokeWidth=1.5;" edge="1" parent="1" source="ReservationRoutes" target="ReservationController">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="edge_1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;endArrow=open;endFill=0;strokeColor=#53728D;strokeWidth=1.5;fontSize=12;fontFamily=Arial;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="ReservationRoutes" target="ReservationController">
+          <mxGeometry as="geometry" relative="1" />
         </mxCell>
-        <mxCell id="edge_2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;endArrow=open;endFill=0;strokeColor=#53728D;strokeWidth=1.5;" edge="1" parent="1" source="PaymentRoutes" target="PaymentController">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="edge_2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;endArrow=open;endFill=0;strokeColor=#53728D;strokeWidth=1.5;fontSize=12;fontFamily=Arial;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="PaymentRoutes" target="PaymentController">
+          <mxGeometry as="geometry" relative="1" />
         </mxCell>
-        <mxCell id="edge_3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;endArrow=open;endFill=0;strokeColor=#53728D;strokeWidth=1.5;" edge="1" parent="1" source="ReservationController" target="ReservationService">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="edge_3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;endArrow=open;endFill=0;strokeColor=#53728D;strokeWidth=1.5;fontSize=12;fontFamily=Arial;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="ReservationController" target="ReservationService">
+          <mxGeometry as="geometry" relative="1" />
         </mxCell>
-        <mxCell id="edge_4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;endArrow=open;endFill=0;strokeColor=#53728D;strokeWidth=1.5;" edge="1" parent="1" source="PaymentController" target="PaymentService">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="edge_4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;endArrow=open;endFill=0;strokeColor=#53728D;strokeWidth=1.5;fontSize=12;fontFamily=Arial;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="PaymentController" target="PaymentService">
+          <mxGeometry as="geometry" relative="1" />
         </mxCell>
-        <mxCell id="edge_5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;endArrow=open;endFill=0;strokeColor=#53728D;strokeWidth=1.5;" edge="1" parent="1" source="ReservationService" target="ReservationRepository">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="edge_5" value="bloqueia antes de cancelar" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;endArrow=open;endFill=0;strokeColor=#53728D;strokeWidth=1.5;fontSize=12;fontFamily=Arial;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="ReservationService" target="ReservationRepository">
+          <mxGeometry as="geometry" relative="1" />
         </mxCell>
-        <mxCell id="edge_6" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;endArrow=open;endFill=0;strokeColor=#53728D;strokeWidth=1.5;" edge="1" parent="1" source="ReservationService" target="MySQLPool">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="edge_6" value="bloqueia antes de validar" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;endArrow=open;endFill=0;strokeColor=#53728D;strokeWidth=1.5;fontSize=12;fontFamily=Arial;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="PaymentService" target="ReservationRepository">
+          <mxGeometry as="geometry" relative="1" />
         </mxCell>
-        <mxCell id="edge_7" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;endArrow=open;endFill=0;strokeColor=#53728D;strokeWidth=1.5;" edge="1" parent="1" source="PaymentService" target="MySQLPool">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="edge_7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;endArrow=open;endFill=0;strokeColor=#53728D;strokeWidth=1.5;fontSize=12;fontFamily=Arial;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="ReservationService" target="MySQLPool">
+          <mxGeometry as="geometry" relative="1" />
         </mxCell>
-        <mxCell id="edge_8" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;endArrow=open;endFill=0;strokeColor=#53728D;strokeWidth=1.5;" edge="1" parent="1" source="ReservationRepository" target="MySQL8">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="edge_8" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;endArrow=open;endFill=0;strokeColor=#53728D;strokeWidth=1.5;fontSize=12;fontFamily=Arial;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="PaymentService" target="MySQLPool">
+          <mxGeometry as="geometry" relative="1" />
         </mxCell>
-        <mxCell id="edge_9" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;endArrow=open;endFill=0;strokeColor=#53728D;strokeWidth=1.5;" edge="1" parent="1" source="MySQLPool" target="MySQL8">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="edge_9" value="mesma transação" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;endArrow=open;endFill=0;strokeColor=#53728D;strokeWidth=1.5;fontSize=12;fontFamily=Arial;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="ReservationRepository" target="MySQLPool">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_10" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;endArrow=open;endFill=0;strokeColor=#53728D;strokeWidth=1.5;fontSize=12;fontFamily=Arial;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="MySQLPool" target="MySQL8">
+          <mxGeometry as="geometry" relative="1" />
         </mxCell>
       </root>
     </mxGraphModel>

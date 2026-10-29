@@ -11,6 +11,7 @@
 
 | Documento | Para que serve |
 |---|---|
+| [Índice da documentação atual](docs/README.md) | Situação comprovada, documentos atuais e registros históricos |
 | [Resumo executivo](docs/RESUMO_EXECUTIVO.md) | O que foi feito, o que falta, pontos críticos |
 | [Revisão das partes 1–3](docs/REVISAO_GERAL.md) | Auditoria técnica e limites de validação |
 | [Matriz RF01–RF35/RNF01–RNF14](docs/MATRIZ_REQUISITOS_CP2.md) | Cobertura dos requisitos originais |
@@ -18,7 +19,7 @@
 | [Como testar e registrar evidências](docs/TESTES_E_EVIDENCIAS.md) | Passo a passo local, Jest, MySQL e prints |
 | [Diagramas](docs/DIAGRAMAS_INTERACAO.md) | Seis diagramas de interação `.drawio` editáveis |
 | [Roteiro de apresentação](docs/ROTEIRO_APRESENTACAO_6_MINUTOS.md) | Fala dividida entre os cinco colegas |
-| [PDF único](entrega/HospedJa_Checkpoint3_Documento_Unico.pdf) | Relatório acadêmico preliminar |
+| [PDF único](entrega/HospedJa_Checkpoint3_Documento_Unico.pdf) | Relatório consolidado atualizado em 28/10/2026 |
 | [Roteiro AWS](aws/DEPLOY_AWS.md) | Proposta EC2+RDS, sem recursos provisionados |
 | [Rotas e perfis](docs/ROTAS_E_PERMISSOES.md) | Contrato HTTP e permissões |
 
@@ -133,7 +134,7 @@ git push -u origin main
 
 ## 10. Entrega para a disciplina
 
-`entrega/HospedJa_Checkpoint3_Documento_Unico.pdf` é um relatório preliminar consolidado; atualizar com **prints reais** antes de submeter. Também conferir se o professor espera as fontes dos diagramas além do PDF. O comunicado oficial prevê documento + artefatos em **PDF único** e apresentação do grupo.
+`entrega/HospedJa_Checkpoint3_Documento_Unico.pdf` foi regenerado com os documentos atuais, seis diagramas e transcrições reais de testes/Docker/HTTP, além dos links da CI. Preencher a identificação acadêmica e confirmar se o professor exige capturas adicionais e fontes dos diagramas; veja [geração e conferência do PDF](docs/PDF_UNICO_E_ENTREGA.md). O comunicado oficial prevê documento + artefatos em **PDF único** e apresentação do grupo.
 
 **ProjectLibre/ClickUp:** não incluídos por solicitação da equipe. Isso não elimina eventual exigência oficial de atualização semanal no ProjectLibre; confirmar com o professor.
 

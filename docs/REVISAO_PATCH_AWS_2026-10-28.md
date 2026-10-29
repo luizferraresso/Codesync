@@ -51,3 +51,7 @@ Log da compatibilidade MySQL: pasta irmã `../validacao-2026-10-28/aws-mysql84-t
 Para executar a parte remota, faltam um acesso autenticado autorizado (perfil/SSO AWS ou SSH/SSM à EC2), identificação da conta/região/instância e a URL atual. Não enviar senha, token ou chave privada pelo chat; configurar o acesso localmente e informar somente o perfil ou o caminho local da chave.
 
 Com esse acesso será necessário inspecionar os recursos já criados, revisão executada no servidor, rede/SG, TLS, parâmetros e schema do RDS; confirmar backup; aplicar a migração com credencial adequada; atualizar um commit revisado; validar saúde, Swagger, autenticação/auditoria e acesso HTTPS. Sem isso, não é possível afirmar que a aplicação pública esteja correta ou que o deploy tenha ocorrido.
+
+## Atualização posterior: publicação no GitHub
+
+O texto acima registra a inspeção anterior à publicação. Posteriormente, os commits remotos foram integrados, as correções foram enviadas à branch `fix/seguranca-testes-docker-aws` e foi aberta a [PR #3](https://github.com/luizferraresso/Codesync/pull/3), vinculada à [issue #2](https://github.com/luizferraresso/Codesync/issues/2). A CI de push e PR passou. A validação após integração teve 142 testes unitários/HTTP, 7 DB e 90,09% de linhas. O deploy AWS real continua pendente de acesso e conferência do ambiente.

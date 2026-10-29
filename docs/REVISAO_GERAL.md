@@ -1,51 +1,47 @@
-# Auditoria consolidada das Partes 1, 2 e 3
+# Revisão técnica consolidada do projeto
 
-**Data da revisão:** 24/10/2026. **Base:** arquivos presentes nas entregas 1 a 3 e documento técnico do Checkpoint 2. Não houve execução funcional de banco ou aplicação nesta auditoria.
+**Atualização: 28/10/2026.** Esta revisão substitui o diagnóstico estático de 24/10 como orientação atual. Consulte [resultados e limitações](VERIFICACAO_E_LIMITACOES.md) e [índice da documentação](README.md).
 
-## Inventário e origem
+## Estado das entregas
 
-| Parte | Material analisado | Resultado consolidado |
+| Parte | Material | Situação |
 |---|---|---|
-| 1 | `01_schema.sql`, `02_seed.sql`, `03_verificacao.sql`, ARQUITETURA e MODELAGEM | 40 tabelas, scripts reunidos em `database/`; schema/seed existentes; execução real pendente |
-| 2 | Código Node, Express, mysql2, controladores, CRUD, middleware, Docker Compose | Código incluído integralmente; não demonstrado em servidor |
-| 3 | Swagger, Jest/Supertest, TDD didático, CI, roteiro AWS | Arquivos incluídos; testes e deploy reais não demonstrados |
-| 4 | Diagramas `.drawio`, PDF, roteiro e backlog | Documentação nova neste pacote |
+| Banco | Schema, seed fictício, status básicos, verificação e migração | 40 tabelas e 68 FKs; SQL e restrições exercitados; MySQL 8.0/8.4 locais testados |
+| Backend | API REST, autenticação, catálogo, rascunhos, ocorrências e auditoria | Código executado e regressões aprovadas; módulos de negócio ainda incompletos |
+| Qualidade | Jest/Supertest, integração real, laboratório TDD, OpenAPI e CI | 149 testes do backend aprovados; 90,09% linhas de todo `src`; CI aprovada |
+| Operação | Docker e procedimento EC2/RDS | Docker local validado; preflight e rollback simulados; AWS real não verificada |
+| Documentação | Fontes editáveis, previews e documentos | Documentos, diagramas e PDF regenerados; identificação e revisão acadêmica final pendentes |
 
-## Pontos críticos antes de alegar Checkpoint concluído (P0)
+## Correções verificadas
 
-1. **Executar MySQL 8 / Docker e integração completa.** Não houve servidor MySQL nem Docker neste ambiente; `npm run integrity` valida referências estáticas, não SQL ou FK em execução. Executar DDL, seed local, `03_verificacao.sql` e testes com banco isolado.
-2. **Executar `npm install` e os testes Jest/Supertest.** O resultado real de cobertura não existe neste material. Criar `package-lock.json` e commitar para builds reproduzíveis, então preferir `npm ci` no GitHub Actions e Dockerfile.
-3. **Conferir privilégio e trilha de auditoria real.** `src/services/audit.service.js` intercepta erro de inserção em `tb_log` e apenas registra erro Winston; operação pode retornar sucesso sem log no MySQL. Definir se falha de auditoria deve bloquear operações críticas; medir persistência e alertar falhas.
-4. **Ausência de deploy comprovado.** AWS está documentada, não executada. Não inserir prints, endereço público ou custo real inexistente.
-5. **Reconciliar escopo professor e pedido da equipe.** As instruções de CP3 mencionam atualização semanal no ProjectLibre e commits semanais; ProjectLibre/ClickUp foram excluídos desta entrega por solicitação do grupo, mas o professor pode cobrar o item oficial 4.9.2. Commits passados não podem ser recriados como evidência histórica.
-6. **Modelagem ≠ implementação integral.** `tb_reserva`/`tb_pagamento` e tabelas de SAC existem, mas cotação, disponibilidade, fluxo de confirmação, Mercado Pago, DeepSeek e atendimento ainda não são APIs completas.
+- Senhas limitadas a 72 bytes UTF-8; troca de senha incrementa `token_version` no mesmo UPDATE do hash e revoga JWTs anteriores.
+- Ocorrências validam propriedade e coerência de reservas, guias e alvos antes de gravar.
+- Criação de pagamento interno e cancelamento de rascunho bloqueiam a mesma reserva dentro da transação; o fluxo não processa cobrança externa.
+- Listagens públicas filtram visibilidade antes do limite e aceitam paginação; campos numéricos respeitam tipos SQL.
+- Payload excessivo retorna 413; erros de restrição/intervalo retornam 422; troca de senha tem evento próprio de auditoria.
+- Zod atualizado, lockfile publicado, `npm ci` no Docker/CI e cobertura aplicada a todo `src`.
+- Alterações remotas da equipe foram integradas, preservando o uso de `originalUrl` na auditoria.
 
-## Melhorias recomendadas antes do deploy (P1)
+## Pendências que continuam relevantes
 
-7. Validar que nenhuma conta de `02_seed.sql` e nenhum conteúdo fictício sejam carregados no RDS. O compose local importa `02_seed.sql` apenas quando o volume é criado.
-8. Em `reservation.service.js`, criação de reserva não seleciona `id_tipo_quarto` nem bloqueia disponibilidade. Não expor endpoint preliminar como reserva confirmada.
-9. `payment.service.js` cria pagamento administrativo `PENDENTE` sem interação com o gateway. Não permitir cliente forjar aprovação; webhook autenticado e conciliação são pendentes.
-10. `occurrence.service.js` registra e analisa ocorrências mas não aplica penalidades; o documento de punições prevê advertência/suspensão/bloqueio de cliente, hotel e guia somente após curadoria humana. Acrescentar API e histórico sem automatizar decisão.
-11. Autorização e privacidade: verificar em testes de integração CRUD e acesso a registros de outra pessoa, bem como dados pessoais em GET /guias, /usuarios e /ocorrencias.
-12. Melhorar observabilidade: correlação `request-id`, política de retenção, métricas, backups e recovery; nenhuma dessas foi verificada em nuvem.
-13. Swagger contém as rotas base, mas deve ser confirmado que request/response correspondem ao comportamento HTTP efetivo após execução.
-14. Configurar TLS de MySQL no RDS com CA e hostname verificados; `DB_SSL_CA_PATH` é preparatório.
-15. Testar timezone/data, reserva no limite do dia e expiração de token; não pressupor conformidade apenas pelos validadores.
+1. Obter acesso ao ambiente AWS relatado pelo integrante, inspecionar os recursos existentes, conferir backup, executar a migração com usuário autorizado e validar HTTPS, SGs, parâmetros e RDS. Não criar recursos duplicados sem conferir o ambiente.
+2. Implementar pesquisa, disponibilidade por datas, seleção de quarto, cotação e confirmação transacional. Rascunho PENDENTE não bloqueia inventário.
+3. Implementar integrações e regras definitivas, SAC/DeepSeek, reserva/avaliação de guia e aplicação manual de penalidades após análise humana.
+4. Definir garantia de auditoria para operações críticas. Hoje a inserção em `tb_log` é best-effort e ocorre após a resposta; falha de gravação é logada, sem reverter a operação.
+5. Ampliar observabilidade, retenção, testes de carga/resiliência, backup/restauração e testes de contrato das respostas OpenAPI.
+6. Acompanhar seis alertas baixos em dependências de desenvolvimento Jest/deepmerge; a auditoria de produção registrada não apontou alertas.
+7. Concluir revisão e merge da PR #3, preencher dados da equipe e revisar a submissão acadêmica do PDF atualizado. Confirmar exigência acadêmica de ProjectLibre/cronograma; não fabricar histórico semanal nem histórico test-first.
 
-## Pontos de atenção documentais
+## Critério de validação do checkpoint
 
-- Requisitos **RF01–RF35 e RNF01–RNF14** constam na tabela do documento técnico CP2; o texto de planejamento anterior citava RNF01–RNF10 e confundia RF26 com logs. Neste repositório, logs correspondem a **RF32–RF34**.
-- Diagrama antigo de componentes indica Java/Python; o atual `.drawio` descreve Node.js/Express como definido na implementação.
-- TDD `tdd/` é um **laboratório reconstruído** de Red/Green/Refactor; não constitui prova histórica de metodologia test-first no código anterior.
-- Não há imagens ou logs genuínos de execução nesta entrega. O PDF relata status em vez de inventar evidências.
+- [x] Schema e restrições executados; seed fictício somente no ambiente local.
+- [x] Instalação reproduzível, sintaxe, integridade, cobertura e integração MySQL aprovadas.
+- [x] Saúde, Swagger, autenticação, autorização e auditoria exercitados localmente.
+- [x] CI de push e PR aprovada nos commits publicados.
+- [x] Seis diagramas e documentação operacional alinhados ao backend desta revisão.
+- [ ] Deploy público HTTPS e configuração real de EC2/RDS comprovados.
+- [ ] Revisão de outro integrante e merge da PR concluídos.
+- [x] PDF regenerado com diagramas e transcrições reais, com conferência de conteúdo e renderização.
+- [ ] Identificação da equipe, capturas adicionais exigidas pelo professor e apresentação finais conferidas.
 
-## Critério mínimo para marcar o Checkpoint 3 como validado
-
-- [ ] Banco MySQL 8 executado e verificado; schema, FKs, índices e seed local testados
-- [ ] `npm ci`, `npm run check`, `npm run integrity` e `npm run test:coverage` passaram
-- [ ] `npm run test:db` passou com banco isolado
-- [ ] Swagger abre e exemplos de requests/responses batem com o serviço
-- [ ] Endpoint público HTTPS comprovado por uma consulta real; RDS conectado e privado
-- [ ] Logs persistidos, sem senha/token e com usuário, evento e horário
-- [ ] O professor recebeu acesso GitHub e histórico de commits verificável
-- [ ] PDF único atualizado com capturas de tela reais e apresentação revisada
+RF32–RF34 tratam de logs; RF26 trata de resposta do chatbot. A existência das tabelas de um domínio não equivale a requisito implementado. O laboratório TDD foi reconstruído depois da implementação inicial e não comprova que ela nasceu de test-first.

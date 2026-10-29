@@ -1,33 +1,27 @@
-# Resumo executivo para compartilhar com a equipe
+# Resumo executivo para a equipe
 
-**Atualização de 28/10/2026:** as falhas reproduzidas na revisão foram corrigidas, o lockfile foi gerado e a API/MySQL 8 foram iniciados no Docker. Consulte [resultados e comandos atuais](CORRECOES_E_DOCKER_2026-10-28.md). As listas abaixo registram também pendências da consolidação original.
+**Atualização: 28/10/2026.** O backend recebeu correções de segurança e integridade, foi testado com banco real e executado no Docker. A publicação está na [PR #3](https://github.com/luizferraresso/Codesync/pull/3); a consulta desta revisão encontrou a PR em rascunho, sem merge, com CI aprovada.
 
-## O que foi produzido
+## Entregas comprovadas
 
-- **Parte 1:** arquitetura em camadas, script `01_schema.sql` (40 tabelas), seed fictício e script de verificação.
-- **Parte 2:** API REST Node.js/Express, cadastro/login com bcrypt/JWT, rotas de usuários, hospedagens, quartos, guias, rascunhos de reservas, pagamentos preliminares, ocorrências, auditoria, Docker.
-- **Parte 3:** suíte Jest/Supertest, integração opcional MySQL, laboratório didático Red/Green/Refactor, OpenAPI/Swagger e roteiro AWS EC2/RDS + CI.
-- **Parte 4:** seis diagramas editáveis `.drawio`, documento único em PDF, apresentação de 6 min, auditoria, matriz de RF/RNF, divisão de tarefas e organização pronta para versionar.
+- Node.js 22/Express, Zod 4.6.7, bcrypt e JWT com revogação após troca de senha.
+- Banco com 40 tabelas, 68 FKs, migração de sessão e SQL parametrizado; MySQL 8.0/8.4 testados localmente.
+- Permissões e vínculos das ocorrências, limites de entrada, auditoria sanitizada, filtros SQL e paginação corrigidos.
+- Rascunhos de reservas e lançamentos internos com transações/bloqueios; isso não constitui um fluxo de reserva comercial completo.
+- 142 testes unitários/HTTP e 7 de integração aprovados; cobertura global de linhas de 90,09%.
+- Docker reproduzível, bancos de teste separados, CI aprovada e sete cenários simulados de deploy/rollback.
+- Seis diagramas editáveis e previews atualizados, matriz de requisitos, guias de operação e apresentação revisados; PDF consolidado regenerado com evidências reais.
 
-## O que ainda precisa ser testado
+## Próximos passos
 
-- Manter regressões unitárias/HTTP e integração real na CI; lockfile e Docker já validados localmente.
-- Ampliar testes dos fluxos de negócio conforme as funcionalidades futuras forem implementadas.
-- Validar Swagger contra a API em execução.
-- Implantar EC2/RDS, habilitar HTTPS e medir custos/segurança antes de afirmar que há deploy.
+- Revisar e fazer merge da PR; manter regressões e CI nas novas funcionalidades.
+- Obter acesso à AWS, conferir recursos já existentes, migração, backup, rede e HTTPS; ainda não há deploy remoto verificado nesta revisão.
+- Implementar pesquisa por destino/datas, disponibilidade, seleção/cotação e confirmação de reservas.
+- Completar integrações de negócio, reserva/avaliação de guias, SAC/DeepSeek, atendimento humano e penalidades manuais.
+- Melhorar garantia da auditoria, observabilidade, carga, backup/restauração e contrato completo do OpenAPI.
+- Acompanhar os seis alertas baixos de desenvolvimento; a consulta registrada da árvore de produção ficou sem alertas.
+- Preencher a identificação acadêmica no PDF atualizado e validar a rubrica, incluindo eventuais capturas adicionais exigidas pelo professor.
 
-## O que ainda precisa ser implementado
+Revogação de sessões, paginação do catálogo, lockfile, execução local Docker e primeira rodada de testes negativos já foram realizados; não devem continuar no backlog como itens ainda não iniciados.
 
-- Pesquisa por destino, quartos disponíveis, valores, reservas confirmadas.
-- Mercado Pago real, webhook autenticado, idempotência, estorno, regra 7 dias.
-- SAC/Ouvidoria, API DeepSeek, atendimento humano e histórico funcional.
-- Aplicação manual de punições após análise, com trilha de auditoria.
-- Melhorias de confiabilidade: falhas de auditoria, sessões JWT, paginação, testes negativos, monitoração.
-
-## Quem fará o quê
-
-**Integrante 1:** DB e migrações. **Integrante 2:** autenticação e permissões. **Integrante 3:** reservas/pagamentos. **Integrante 4:** testes/Docker/AWS/CI. **Integrante 5:** diagramas/PDF/Swagger/SAC/ocorrências. Detalhes e critérios em `docs/DIVISAO_EQUIPE_E_BACKLOG.md`.
-
-## Atenção
-
-O pacote é uma **base de trabalho para o grupo**, não um produto pronto. Há relatório de cobertura e execução Docker local; ainda não há implantação AWS comprovada.
+Responsáveis continuam genéricos até a equipe confirmar os cinco nomes: [divisão e backlog](DIVISAO_EQUIPE_E_BACKLOG.md). Resultados detalhados: [verificação](VERIFICACAO_E_LIMITACOES.md), [correções](CORRECOES_E_DOCKER_2026-10-28.md) e [índice](README.md). O projeto é uma base em desenvolvimento, não uma versão completa de produção.

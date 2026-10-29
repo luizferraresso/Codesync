@@ -7,6 +7,14 @@
 *.yml text eol=lf
 *.sh text eol=lf
 *.md text eol=lf
+*.py text eol=lf
+*.dot text eol=lf
+*.drawio text eol=lf
+
+# Preserve generated document/image bytes on all platforms.
+*.pdf binary
+*.png binary
+*.docx binary
 
 *.bat text eol=crlf
 *.cmd text eol=crlf
