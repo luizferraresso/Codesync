@@ -6,15 +6,9 @@ const audit = require('../services/audit.service');
 function auditMiddleware(req, res, next) {
   res.on('finish', () => {
     const fullPath = req.originalUrl.split('?')[0];
-
     if (fullPath === '/health') return;
-
-    if (!['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) {
-      return;
-    }
-
+    if (!['POST','PUT','PATCH','DELETE'].includes(req.method)) return;
     const segments = fullPath.split('/').filter(Boolean);
-
     const resource = segments[2] || 'unknown';
 
     let action;
