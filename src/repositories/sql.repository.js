@@ -10,12 +10,14 @@ async function findById(table, primaryKey, id, executor = pool) {
     `SELECT * FROM ${quote(table)} WHERE ${quote(primaryKey)} = ? LIMIT 1`, [id]);
   return rows[0] || null;
 }
-async function list(table, criteria = {}, executor = pool) {
+async function list(table, criteria = {}, executor = pool, {limit = 100, offset = 0} = {}) {
+  if (!Number.isInteger(limit) || limit < 1 || limit > 100 || !Number.isInteger(offset) || offset < 0 || offset > 1000000)
+    throw new Error('Paginacao invalida');
   const filters = Object.entries(criteria);
   const where = filters.length
     ? ` WHERE ${filters.map(([key]) => `${quote(key)} = ?`).join(' AND ')}` : '';
   const [rows] = await executor.execute(
-    `SELECT * FROM ${quote(table)}${where} ORDER BY 1 DESC LIMIT 100`, filters.map(([,v]) => v));
+    `SELECT * FROM ${quote(table)}${where} ORDER BY 1 DESC LIMIT ? OFFSET ?`, [...filters.map(([,v]) => v),String(limit),String(offset)]);
   return rows;
 }
 async function create(table, data, executor = pool) {

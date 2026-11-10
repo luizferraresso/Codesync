@@ -1,0 +1,55 @@
+@base = http://localhost:3000
+
+### 1. Login correto
+# @name login
+POST {{base}}/api/v1/auth/login
+Content-Type: application/json
+
+{"email":"Joao@gmail.com","senha":"Algosenha123"}
+
+### 2. Login com senha errada
+POST {{base}}/api/v1/auth/login
+Content-Type: application/json
+
+{"email":"cliente@hospedja.example","senha":"SenhaErrada123"}
+
+### 3. Cadastro de usuario novo
+POST {{base}}/api/v1/auth/register
+Content-Type: application/json
+
+{"nome":"Joao","email":"Joao@gmail.com","senha":"Algosenha123"}
+
+### 4. Cadastro repetido (deve dar erro 409)
+POST {{base}}/api/v1/auth/register
+Content-Type: application/json
+
+{"nome":"Teste Log","email":"teste-log@example.com","senha":"Exemplo#Seguro2026"}
+
+### 5. Criar reserva (usa o token do login)
+POST {{base}}/api/v1/reservas
+Authorization: Bearer {{login.response.body.$.data.token}}
+Content-Type: application/json
+
+{"checkin":"2027-06-15","checkout":"2027-07-15","quantidade_hospedes":1,"observacoes":"MIAMI"}
+
+### 7. Login do ADMIN
+# @name admin
+POST {{base}}/api/v1/auth/login
+Content-Type: application/json
+
+{"email":"admin@hospedja.example","senha":"Admin#CP3_2026!"}
+
+### 8. Abrir ocorrência contra o guia 1 (usa o login do cliente)
+# @name ocorrencia
+POST {{base}}/api/v1/ocorrencias
+Authorization: Bearer {{login.response.body.$.data.token}}
+Content-Type: application/json
+
+{"tipo_alvo":"GUIA","id_alvo":"1","tipo_ocorrencia":"ABANDONO_DA_TRILHA","descricao":"Guia abandonou o grupo durante a trilha"}
+
+### 9. Admin analisa a ocorrência (decisão humana)
+PATCH {{base}}/api/v1/ocorrencias/{{ocorrencia.response.body.$.data.id_ocorrencia}}/analise
+Authorization: Bearer {{admin.response.body.$.data.token}}
+Content-Type: application/json
+
+{"status":"PROCEDENTE","analise":"Guia realmente aba'ndonou o grupo, conforme relatos e evidências apresentadas."}

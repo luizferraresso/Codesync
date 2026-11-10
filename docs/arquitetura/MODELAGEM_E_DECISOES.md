@@ -1,5 +1,7 @@
 # HospedJá — decisões de modelagem e rastreabilidade
 
+**Revisão: 28/10/2026.** As decisões abaixo foram originadas no CP2 e agora são confrontadas com o schema e serviços atuais; execução local validada em MySQL 8.0/8.4.
+
 ## Fontes fornecidas pela equipe
 
 - **DER v4** em `HospedJa_DER_v4.drawio`, extraído do ZIP `Checkpoint2.zip.zip`.
@@ -11,7 +13,7 @@
 
 ## Divergências entre modelos e decisões adotadas
 
-| Ponto | Modelos de origem | Decisão física nesta Parte 1 |
+| Ponto | Modelos de origem | Decisão física e implementação atual |
 |---|---|---|
 | Hospedagem x hotel | Classe `Hospedagem`; DER `tb_hotel` | Usar `tb_hotel` como hospedagem e `tb_endereco` 1:1. |
 | Quarto x tipo de quarto | Classe `Quarto`; DER `tb_tipo_quarto` com estoque | Usar `tb_tipo_quarto` com `quantidade_disponivel`; quartos individuais exigiriam evolução posterior. |
@@ -24,8 +26,15 @@
 | Ocorrências | DER foca guia; documento adicional cobre cliente/hotel/guia | `tb_ocorrencia.tipo_alvo` com FK para exatamente um destino. Punição aponta para ocorrência analisada e para administrador responsável. |
 | Penalidade do guia | Classe possui flag `punido`, motivo e número OS | Histórico de `tb_penalidade` como fonte de verdade, evitando sincronização de flags. Número da ocorrência = `id_ocorrencia`; caso número OS externo seja obrigatório, adicionar na futura migração. |
 | Status/histórico | DER possui tabelas de domínio + históricos | Preservar `tb_status_reserva`, `tb_status_pagamento`, `tb_status_mensagem`, `tb_reserva_status`, `tb_pagamento_status`. |
-| Logs | DER prevê log geral e diversos logs específicos; RF32–RF34 | Preservar `tb_log` e 8 tabelas setoriais do DER. Logging em arquivo virá na Parte 2. |
+| Logs | DER prevê log geral e diversos logs específicos; RF32–RF34 | Preservar `tb_log` e 8 tabelas setoriais do DER. A API grava tb_log e usa Winston/stdout/arquivo opcional; as tabelas setoriais não equivalem a fluxos HTTP implementados. |
 | SAC/Ouvidoria | Requisitos RF23–RF31 e RF35 | `tb_atendimento`, `tb_mensagem`, `tb_atendimento_historico`; sem chave de IA nem integração nesta etapa. |
+
+## Migração e consistência acrescentadas em 28/10
+
+- `tb_usuario.token_version` não cria tabela adicional: é incrementado junto com o hash na troca de senha e comparado ao claim JWT sv. O total permanece em 40 tabelas.
+- O schema novo inclui a coluna. Bancos existentes precisam de `npm run db:migrate`, com usuário autorizado; a migração é aditiva e idempotente.
+- Cancelamento e criação de pagamento interno usam a mesma reserva bloqueada na transação. Isso protege esse estado, sem implementar inventário de quartos por datas.
+- DDL/seed/verificação e restrições foram exercitados localmente. O seed fictício não deve ser importado no RDS; nesse ambiente usar schema/migrações e status básicos.
 
 ## Referências de requisito por tabela
 
@@ -44,7 +53,7 @@
 
 O DDL garante tipagem, unicidade, referências e vários CHECKs; **não implementa os fluxos de negócio**.
 
-1. O serviço deverá autorizar cada operação conforme perfil do usuário (não é assegurado por FK).
+1. A API autoriza por perfil e propriedade; ocorrências validam relações com reserva/guia/alvo. FK isolada não garante essas regras nem substitui regressões.
 2. Regra de pagamento até sete dias antes do check-in deve ser checada antes/depois do callback externo (RN01/RF14).
 3. O serviço deverá evitar overbooking com transações/locks e validação por intervalo (RN03/RNF06). `quantidade_disponivel` **não garante** a disponibilidade por data isoladamente.
 4. O serviço deve conferir que o hotel referenciado por mídias de quarto corresponde ao hotel do quarto; são FKs separadas.

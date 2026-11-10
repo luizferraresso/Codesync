@@ -44,7 +44,8 @@ describe('TDD 2/3: cadastro, login e JWT', () => {
   test('troca a senha com verificacao da anterior', async () => {
     users.byId.mockResolvedValue({id_usuario:'10',email:'teste@example.com'});
     users.byEmail.mockResolvedValue({senha_hash:await hashPassword('Anterior#2026')});
+    users.changePassword.mockResolvedValue(1);
     await auth.changePassword('10',{atual:'Anterior#2026',nova:'Nova#Segura2026'});
-    expect(await verifyPassword('Nova#Segura2026',users.update.mock.calls[0][1].senha_hash)).toBe(true);
+    expect(await verifyPassword('Nova#Segura2026',users.changePassword.mock.calls[0][1])).toBe(true);
   });
 });

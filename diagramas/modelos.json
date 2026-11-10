@@ -1,0 +1,84 @@
+{
+  "updated": "2026-10-28",
+  "diagrams": [
+    {
+      "file": "01_camadas_controller_service_repository",
+      "title": "Camadas e dependências do backend",
+      "rows": [
+        [{"id":"ExpressRoutes","label":"ExpressApp / Routes\nHTTP · JWT · Zod 4"}],
+        [{"id":"AuthController","label":"AuthController\n+ register()\n+ login()\n+ changePassword()"},{"id":"CatalogController","label":"CatalogController\n+ list()\n+ create()\n+ patch()"},{"id":"ReservationController","label":"ReservationController\n+ create()\n+ cancel()"},{"id":"OccurrenceController","label":"OccurrenceController\n+ create()\n+ review()"}],
+        [{"id":"AuthService","label":"AuthService\n+ register()\n+ authenticate()\n+ changePassword()"},{"id":"CatalogService","label":"CatalogService\n+ list(type,user,pagination)\n+ create() · patch()"},{"id":"ReservationService","label":"ReservationService\n+ create()\n+ cancelPendingDraft()"},{"id":"OccurrenceService","label":"OccurrenceService\n+ create()\n+ review()"}],
+        [{"id":"UserRepository","label":"UserRepository\n+ byEmail() · byId()\n+ changePassword()"},{"id":"SqlRepository","label":"SqlRepository\n+ findById() · list()\n+ create() · update()"},{"id":"ReservationRepository","label":"ReservationRepository\n+ find() · statusId()\n+ anyPayment()"}],
+        [{"id":"MySQLPool","label":"mysql2 Pool / Connection\nSQL parametrizado\ntransações"}],
+        [{"id":"MySQL8","label":"MySQL 8.0 / 8.4\n40 tabelas\npersistência relacional"}]
+      ],
+      "edges": [
+        ["ExpressRoutes","AuthController"],["ExpressRoutes","CatalogController"],["ExpressRoutes","ReservationController"],["ExpressRoutes","OccurrenceController"],
+        ["AuthController","AuthService"],["CatalogController","CatalogService"],["ReservationController","ReservationService"],["OccurrenceController","OccurrenceService"],
+        ["AuthService","UserRepository"],["CatalogService","SqlRepository"],["CatalogService","MySQLPool"],["ReservationService","ReservationRepository"],["ReservationService","MySQLPool"],["OccurrenceService","SqlRepository"],["OccurrenceService","MySQLPool"],
+        ["UserRepository","SqlRepository"],["UserRepository","MySQLPool"],["SqlRepository","MySQLPool"],["ReservationRepository","MySQLPool"],["MySQLPool","MySQL8"]
+      ]
+    },
+    {
+      "file": "02_autenticacao_jwt_bcrypt",
+      "title": "Autenticação, senha e revogação de sessão",
+      "rows": [
+        [{"id":"AuthRoutes","label":"AuthRoutes\nPOST /register · POST /login\nPATCH /password"}],
+        [{"id":"AuthController","label":"AuthController\n+ register() · login()\n+ changePassword()"},{"id":"AuthMiddleware","label":"AuthMiddleware\n+ requireAuth() · allowRoles()\nstatus e perfil vêm do banco\nJWT sv = token_version"},{"id":"Schemas","label":"Schemas Zod 4\nregistration · passwordPatch\nsenha: 10+ caracteres\naté 72 bytes UTF-8"}],
+        [{"id":"AuthService","label":"AuthService\n+ register()\n+ authenticate()\n+ changePassword()"},{"id":"SecurityUtils","label":"SecurityUtils\n+ hashPassword() · verifyPassword()\n+ signToken() · verifyToken()\nJWT: sub e sv; bcrypt"}],
+        [{"id":"UserRepository","label":"UserRepository\n+ byEmail() · byId(id,true)\n+ changePassword()\nhash + versão no mesmo UPDATE"}],
+        [{"id":"MySQL8","label":"MySQL 8.0 / 8.4\ntb_usuario\nsenha_hash · token_version"}]
+      ],
+      "edges": [["AuthRoutes","AuthController"],["AuthRoutes","AuthMiddleware","PATCH /password"],["AuthRoutes","Schemas"],["AuthController","AuthService"],["AuthMiddleware","SecurityUtils"],["AuthMiddleware","UserRepository","valida sessão"],["AuthService","SecurityUtils"],["AuthService","UserRepository"],["UserRepository","MySQL8"]]
+    },
+    {
+      "file": "03_auditoria_logs",
+      "title": "Auditoria HTTP e persistência best-effort",
+      "rows": [
+        [{"id":"ExpressApp","label":"ExpressApp\n+ use(auditMiddleware)\nPOST · PUT · PATCH · DELETE"}],
+        [{"id":"AuditMiddleware","label":"AuditMiddleware\n+ auditMiddleware()\noriginalUrl · resultado HTTP\nALTERACAO_SENHA"}],
+        [{"id":"AuditService","label":"AuditService\n+ record()\nmetadados sanitizados\npersistência best-effort"}],
+        [{"id":"WinstonLogger","label":"WinstonLogger\n+ info() · error()\nevento e falha de gravação"},{"id":"MySQLPool","label":"MySQLPool\n+ execute()\nINSERT parametrizado"}],
+        [{"id":"LogArquivoOuStdout","label":"Stdout / arquivo opcional\neventos JSON\nsem senha ou token"},{"id":"TabelaLog","label":"tb_log\nusuário · ação · resultado\nIP · data_hora"}]
+      ],
+      "edges": [["ExpressApp","AuditMiddleware"],["AuditMiddleware","AuditService","após finish"],["AuditService","WinstonLogger"],["AuditService","MySQLPool"],["WinstonLogger","LogArquivoOuStdout"],["MySQLPool","TabelaLog"]]
+    },
+    {
+      "file": "04_reservas_pagamentos",
+      "title": "Rascunhos e lançamentos administrativos",
+      "rows": [
+        [{"id":"ReservationRoutes","label":"ReservationRoutes\nGET / · GET /:id\nPOST / · PATCH /:id\nDELETE /:id"},{"id":"PaymentRoutes","label":"PaymentRoutes\nGET / · GET /:id\nPOST / (ADMIN)"}],
+        [{"id":"ReservationController","label":"ReservationController\n+ create()\n+ cancel()"},{"id":"PaymentController","label":"PaymentController\n+ create() · get()"}],
+        [{"id":"ReservationService","label":"ReservationService\n+ create()\n+ cancelPendingDraft()\nrascunho PENDENTE"},{"id":"PaymentService","label":"PaymentService\n+ createInternal() · get()\nlançamento PENDENTE\nsem cobrança externa"}],
+        [{"id":"ReservationRepository","label":"ReservationRepository\n+ find(id,tx,true)\n+ anyPayment() · statusId()\nSELECT ... FOR UPDATE"}],
+        [{"id":"MySQLPool","label":"mysql2 Pool / Connection\n+ getConnection()\n+ beginTransaction()\n+ commit() · rollback()"}],
+        [{"id":"MySQL8","label":"MySQL 8.0 / 8.4\ntb_reserva · tb_reserva_status\ntb_pagamento\ntb_pagamento_status"}]
+      ],
+      "edges": [["ReservationRoutes","ReservationController"],["PaymentRoutes","PaymentController"],["ReservationController","ReservationService"],["PaymentController","PaymentService"],["ReservationService","ReservationRepository","bloqueia antes de cancelar"],["PaymentService","ReservationRepository","bloqueia antes de validar"],["ReservationService","MySQLPool"],["PaymentService","MySQLPool"],["ReservationRepository","MySQLPool","mesma transação"],["MySQLPool","MySQL8"]]
+    },
+    {
+      "file": "05_ocorrencias_analise",
+      "title": "Ocorrências, vínculos e análise humana",
+      "rows": [
+        [{"id":"OccurrenceRoutes","label":"OccurrenceRoutes\nGET / · GET /:id · POST /\nPATCH /:id/analise"}],
+        [{"id":"OccurrenceController","label":"OccurrenceController\n+ create() · get()\n+ review()"}],
+        [{"id":"OccurrenceService","label":"OccurrenceService\n+ create() · get() · review()\nproprietário e vínculos válidos\nanálise: somente ADMIN\nsem aplicar penalidade"}],
+        [{"id":"SqlRepository","label":"SqlRepository\n+ findById()\n+ create()"},{"id":"MySQLPool","label":"MySQLPool\n+ execute()\nconsulta vínculos\natualiza análise"}],
+        [{"id":"MySQL8","label":"MySQL 8.0 / 8.4\ntb_ocorrencia · tb_reserva\ntb_reserva_guia · tb_item_reserva\ntb_tipo_quarto · tb_hotel\ntb_guia · tb_usuario"}]
+      ],
+      "edges": [["OccurrenceRoutes","OccurrenceController"],["OccurrenceController","OccurrenceService"],["OccurrenceService","SqlRepository","alvo e reservas"],["OccurrenceService","MySQLPool","vínculos e análise"],["SqlRepository","MySQLPool"],["MySQLPool","MySQL8"]]
+    },
+    {
+      "file": "06_componentes_atualizado_node",
+      "title": "Componentes do backend implementado",
+      "rows": [
+        [{"id":"ClienteHTTP","label":"Cliente HTTP\nSwagger / requisições JSON"}],
+        [{"id":"ExpressAPI","label":"ExpressAPI\nNode.js 22 · Express\nrotas · controllers · middlewares\nZod 4"}],
+        [{"id":"AuthService","label":"AuthService\nbcrypt · JWT\nrevogação de sessão"},{"id":"CatalogService","label":"CatalogService\nhotéis · quartos · guias\nfiltros SQL · paginação"},{"id":"ReservationService","label":"Reserva / pagamento interno\nrascunhos e lançamentos\ntransações e bloqueios"},{"id":"OccurrenceService","label":"OccurrenceService\nautorização e vínculos\nanálise humana"},{"id":"AuditService","label":"AuditService\nmetadados sanitizados\nbest-effort"}],
+        [{"id":"Repositories","label":"Repositories\nUser · SQL\nReservation · Access"},{"id":"MySQLPool","label":"mysql2 Pool / Connection\nSQL parametrizado\ntransações"},{"id":"WinstonLogger","label":"WinstonLogger\ninfo() · error()"}],
+        [{"id":"MySQL8","label":"MySQL 8.0 / 8.4\n40 tabelas\nambientes locais isolados"},{"id":"LogArquivoOuStdout","label":"Stdout / arquivo opcional\neventos JSON"}]
+      ],
+      "edges": [["ClienteHTTP","ExpressAPI"],["ExpressAPI","AuthService"],["ExpressAPI","CatalogService"],["ExpressAPI","ReservationService"],["ExpressAPI","OccurrenceService"],["ExpressAPI","AuditService"],["AuthService","Repositories"],["CatalogService","Repositories"],["CatalogService","MySQLPool"],["ReservationService","Repositories"],["ReservationService","MySQLPool"],["OccurrenceService","Repositories"],["OccurrenceService","MySQLPool"],["AuditService","MySQLPool"],["AuditService","WinstonLogger"],["Repositories","MySQLPool"],["MySQLPool","MySQL8"],["WinstonLogger","LogArquivoOuStdout"]]
+    }
+  ]
+}

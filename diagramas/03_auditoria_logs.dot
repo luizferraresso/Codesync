@@ -1,21 +1,21 @@
 digraph D {
-graph [rankdir=TB,bgcolor=white,ranksep="0.9",nodesep="0.45",pad="0.25",splines=polyline];
-node [shape=box,style="rounded,filled",fillcolor="#F6F8FB",color="#48637C",fontcolor="#12253A",fontname="DejaVu Sans",fontsize=11,margin="0.15,0.15"];
-edge [color="#53728D",arrowsize=0.7];
+graph [rankdir=TB,bgcolor=white,ranksep="1.1",nodesep="0.6",pad="0.3",splines=polyline];
+node [shape=box,style="rounded,filled",fillcolor="#F6F8FB",color="#48637C",fontcolor="#12253A",fontname="DejaVu Sans",fontsize=12,margin="0.18,0.16"];
+edge [color="#53728D",fontcolor="#39546B",fontname="DejaVu Sans",fontsize=10,arrowsize=0.7];
 {rank=same; "ExpressApp";}
-"ExpressApp" [label="ExpressApp\n+ use(auditMiddleware)"];
+"ExpressApp" [label="ExpressApp\n+ use(auditMiddleware)\nPOST · PUT · PATCH · DELETE"];
 {rank=same; "AuditMiddleware";}
-"AuditMiddleware" [label="AuditMiddleware\n+ auditMiddleware()"];
+"AuditMiddleware" [label="AuditMiddleware\n+ auditMiddleware()\noriginalUrl · resultado HTTP\nALTERACAO_SENHA"];
 {rank=same; "AuditService";}
-"AuditService" [label="AuditService\n+ record()"];
+"AuditService" [label="AuditService\n+ record()\nmetadados sanitizados\npersistência best-effort"];
 {rank=same; "WinstonLogger"; "MySQLPool";}
-"WinstonLogger" [label="WinstonLogger\n+ info()\n+ error()"];
-"MySQLPool" [label="MySQLPool\n+ execute()"];
+"WinstonLogger" [label="WinstonLogger\n+ info() · error()\nevento e falha de gravação"];
+"MySQLPool" [label="MySQLPool\n+ execute()\nINSERT parametrizado"];
 {rank=same; "LogArquivoOuStdout"; "TabelaLog";}
-"LogArquivoOuStdout" [label="LogArquivoOuStdout\neventos JSON"];
-"TabelaLog" [label="TabelaLog\ntb_log"];
+"LogArquivoOuStdout" [label="Stdout / arquivo opcional\neventos JSON\nsem senha ou token"];
+"TabelaLog" [label="tb_log\nusuário · ação · resultado\nIP · data_hora"];
 "ExpressApp" -> "AuditMiddleware";
-"AuditMiddleware" -> "AuditService";
+"AuditMiddleware" -> "AuditService" [label="após finish"];
 "AuditService" -> "WinstonLogger";
 "AuditService" -> "MySQLPool";
 "WinstonLogger" -> "LogArquivoOuStdout";

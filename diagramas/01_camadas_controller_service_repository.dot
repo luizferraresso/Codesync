@@ -1,33 +1,45 @@
 digraph D {
-graph [rankdir=TB,bgcolor=white,ranksep="0.9",nodesep="0.45",pad="0.25",splines=polyline];
-node [shape=box,style="rounded,filled",fillcolor="#F6F8FB",color="#48637C",fontcolor="#12253A",fontname="DejaVu Sans",fontsize=11,margin="0.15,0.15"];
-edge [color="#53728D",arrowsize=0.7];
+graph [rankdir=TB,bgcolor=white,ranksep="1.1",nodesep="0.6",pad="0.3",splines=polyline];
+node [shape=box,style="rounded,filled",fillcolor="#F6F8FB",color="#48637C",fontcolor="#12253A",fontname="DejaVu Sans",fontsize=12,margin="0.18,0.16"];
+edge [color="#53728D",fontcolor="#39546B",fontname="DejaVu Sans",fontsize=10,arrowsize=0.7];
 {rank=same; "ExpressRoutes";}
-"ExpressRoutes" [label="ExpressRoutes\n+ registraRotas()"];
-{rank=same; "AuthController"; "CatalogController"; "ReservationController";}
-"AuthController" [label="AuthController\n+ register()\n+ login()"];
-"CatalogController" [label="CatalogController\n+ list()\n+ create()"];
+"ExpressRoutes" [label="ExpressApp / Routes\nHTTP · JWT · Zod 4"];
+{rank=same; "AuthController"; "CatalogController"; "ReservationController"; "OccurrenceController";}
+"AuthController" [label="AuthController\n+ register()\n+ login()\n+ changePassword()"];
+"CatalogController" [label="CatalogController\n+ list()\n+ create()\n+ patch()"];
 "ReservationController" [label="ReservationController\n+ create()\n+ cancel()"];
-{rank=same; "AuthService"; "CatalogService"; "ReservationService";}
-"AuthService" [label="AuthService\n+ register()\n+ authenticate()"];
-"CatalogService" [label="CatalogService\n+ create()\n+ patch()"];
+"OccurrenceController" [label="OccurrenceController\n+ create()\n+ review()"];
+{rank=same; "AuthService"; "CatalogService"; "ReservationService"; "OccurrenceService";}
+"AuthService" [label="AuthService\n+ register()\n+ authenticate()\n+ changePassword()"];
+"CatalogService" [label="CatalogService\n+ list(type,user,pagination)\n+ create() · patch()"];
 "ReservationService" [label="ReservationService\n+ create()\n+ cancelPendingDraft()"];
+"OccurrenceService" [label="OccurrenceService\n+ create()\n+ review()"];
 {rank=same; "UserRepository"; "SqlRepository"; "ReservationRepository";}
-"UserRepository" [label="UserRepository\n+ byEmail()\n+ create()"];
-"SqlRepository" [label="SqlRepository\n+ findById()\n+ update()"];
-"ReservationRepository" [label="ReservationRepository\n+ find()\n+ statusId()"];
+"UserRepository" [label="UserRepository\n+ byEmail() · byId()\n+ changePassword()"];
+"SqlRepository" [label="SqlRepository\n+ findById() · list()\n+ create() · update()"];
+"ReservationRepository" [label="ReservationRepository\n+ find() · statusId()\n+ anyPayment()"];
+{rank=same; "MySQLPool";}
+"MySQLPool" [label="mysql2 Pool / Connection\nSQL parametrizado\ntransações"];
 {rank=same; "MySQL8";}
-"MySQL8" [label="MySQL8\ntb_usuario\ntb_hotel\ntb_reserva"];
+"MySQL8" [label="MySQL 8.0 / 8.4\n40 tabelas\npersistência relacional"];
 "ExpressRoutes" -> "AuthController";
 "ExpressRoutes" -> "CatalogController";
 "ExpressRoutes" -> "ReservationController";
+"ExpressRoutes" -> "OccurrenceController";
 "AuthController" -> "AuthService";
 "CatalogController" -> "CatalogService";
 "ReservationController" -> "ReservationService";
+"OccurrenceController" -> "OccurrenceService";
 "AuthService" -> "UserRepository";
 "CatalogService" -> "SqlRepository";
+"CatalogService" -> "MySQLPool";
 "ReservationService" -> "ReservationRepository";
-"UserRepository" -> "MySQL8";
-"SqlRepository" -> "MySQL8";
-"ReservationRepository" -> "MySQL8";
+"ReservationService" -> "MySQLPool";
+"OccurrenceService" -> "SqlRepository";
+"OccurrenceService" -> "MySQLPool";
+"UserRepository" -> "SqlRepository";
+"UserRepository" -> "MySQLPool";
+"SqlRepository" -> "MySQLPool";
+"ReservationRepository" -> "MySQLPool";
+"MySQLPool" -> "MySQL8";
 }

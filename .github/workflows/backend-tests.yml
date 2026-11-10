@@ -10,10 +10,20 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      # Assim que gerar package-lock.json, substitua npm install por npm ci.
-      - run: npm install --no-audit --no-fund
+      - run: npm ci --no-audit --no-fund
+      - run: npm audit --omit=dev --audit-level=high
       - run: npm run check
       - run: npm run integrity
+      - name: Validar Compose
+        run: |
+          docker compose config --quiet
+          docker compose -f compose.integration.yaml config --quiet
+        env:
+          MYSQL_ROOT_PASSWORD: ci_root_somente_testes
+          DB_PASSWORD: ci_app_somente_testes
+          JWT_SECRET: segredo_ci_ficticio_com_mais_de_32_caracteres
+          TEST_MYSQL_ROOT_PASSWORD: ci_root_integracao
+          TEST_DB_PASSWORD: ci_integracao
       - run: npm run test:coverage
       - uses: actions/upload-artifact@v4
         if: always()
@@ -21,3 +31,40 @@ jobs:
           name: cobertura-jest
           path: coverage/
           if-no-files-found: ignore
+  mysql-integration:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: ci_root_somente_testes
+          MYSQL_DATABASE: hospedja
+          MYSQL_USER: hospedja_teste
+          MYSQL_PASSWORD: ci_app_somente_testes
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 --silent"
+          --health-interval=10s --health-timeout=5s --health-retries=20
+    env:
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_NAME: hospedja
+      DB_USER: hospedja_teste
+      DB_PASSWORD: ci_app_somente_testes
+      JWT_SECRET: segredo_ci_ficticio_com_mais_de_32_caracteres
+      RUN_DB_TESTS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci --no-audit --no-fund
+      - name: Aplicar schema e status basicos
+        run: |
+          docker exec -i "$MYSQL_CONTAINER" sh -c 'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD"' < database/01_schema.sql
+          docker exec -i "$MYSQL_CONTAINER" sh -c 'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD" hospedja' < aws/02_status_basicos.sql
+        env:
+          MYSQL_CONTAINER: ${{ job.services.mysql.id }}
+      - run: npm run db:migrate
+      - run: npm run test:db

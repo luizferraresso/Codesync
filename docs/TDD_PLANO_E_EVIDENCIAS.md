@@ -1,49 +1,45 @@
-# TDD — Checkpoint 3 — CodeSync
+# TDD, testes automatizados e evidências
 
-## Distinção metodológica obrigatória
+## Distinção metodológica
 
-A **Parte 2 foi implementada antes da criação destes testes**, logo NÃO é correto afirmar que toda essa versão nasceu de TDD. O laboratório `tdd/` reproduz honestamente as etapas **Red → Green → Refactor** para quatro funcionalidades, e `tests/` verifica o código efetivo da Parte 2. Use os ciclos reais e commits test-first para as próximas funcionalidades.
-
-## Demonstrar para o professor (laboratório independente)
+A implementação inicial antecedeu a criação do laboratório `tdd/`. O laboratório demonstra Red → Green → Refactor e não comprova test-first histórico da aplicação. Para novas funcionalidades, manter testes e commits reais nessa sequência, sem reescrever o passado.
 
 ```bash
-npm ci           # se package-lock.json existir; do contrario npm install
-npm run test:tdd:red       # ESPERADO: 4 falhas e codigo de saida 1
-npm run test:tdd:green     # ESPERADO: 4 testes passando
-npm run test:tdd:refactor  # ESPERADO: 4 testes passando
+npm ci
+npm run test:tdd:red       # 4 falhas intencionais; saída 1
+npm run test:tdd:green     # 4 aprovados
+npm run test:tdd:refactor  # 4 aprovados
 ```
 
-O `red.js` contém funções propositalmente não implementadas; `green.js` contém o código mínimo; `refactor.js` separa responsabilidades e preserva o contrato. Os quatro cenários são: hash bcrypt, cadastro, login JWT e log seguro. Para cada etapa, faça captura de tela com o comando e saída.
+Os quatro cenários didáticos cobrem hash bcrypt, cadastro, login JWT e log sanitizado. Green e Refactor foram executados com sucesso; Red apresentou as falhas previstas.
 
-## Testes do backend real entregue (com mocks/repositório simulado)
+## Testes do backend real
+
+`npm test`, `npm run test:unit` e `npm run test:http` executam os grupos da configuração Jest. A suíte completa contém 142 testes aprovados em 13 suítes, incluindo autorização, validação, bloqueios e rollback com mocks, senhas UTF-8, sessão, paginação e auditoria. Supertest utiliza o Express real, com repositórios ou serviços simulados conforme a suíte; isso não é persistência real.
+
+`npm run test:coverage` mede **todo `src/**/*.js`**, inclusive arquivos não exercitados. Limiares: 80% linhas/instruções, 70% ramificações e 65% funções. Após a integração da main, foram medidos 90,09% linhas, 87,10% instruções, 83,68% ramificações e 73,18% funções. Relatório HTML: `coverage/index.html`.
+
+## Integração MySQL real e ambientes isolados
 
 ```bash
-npm test
-npm run test:unit
-npm run test:http
-npm run test:coverage
+node scripts/setup-local-env.js
+npm run test:docker
+docker compose -f compose.integration.yaml stop db_integration
 ```
 
-Na API testada, `tests/unit` cobre regras de hash/JWT, serviços de autenticação, troca de senha e auditoria. `tests/http` usa **Supertest com Express real**, validação, middlewares e serviços, mas SUBSTITUI repositórios e alguns serviços com mocks. **Não constitui teste de integração com banco de dados.** O relatório HTML será gerado em `coverage/index.html`; o resumo textual exibirá linhas, ramos, funções e instruções. O `jest.config.cjs` estabelece limites iniciais de cobertura global de 60% das linhas e 45% dos ramos para os módulos selecionados; esses valores só serão comprovados quando a equipe executar `npm run test:coverage`.
+Esse comando executa sintaxe, integridade, cobertura, migração, sete testes DB e TDD Green/Refactor em Node.js 22/MySQL 8.0 isolados. O banco recebe schema e status básicos, sem usuários do seed. Não apontar os testes para o banco de desenvolvimento nem para produção.
 
-## Teste de integração MySQL REAL
-
-Use apenas ambiente de teste isolado: **nunca** banco de produção. No Compose, o banco de desenvolvimento inclui seed; não reutilize esse banco para a nuvem.
+Compatibilidade com a versão indicada para RDS:
 
 ```bash
-# Após docker compose up --build -d e com MySQL acessível no HOST:
-RUN_DB_TESTS=1 DB_HOST=127.0.0.1 DB_PORT=3307 \
-  DB_NAME=hospedja DB_USER=hospedja_app DB_PASSWORD='SUA_SENHA_LOCAL' \
-  JWT_SECRET='SEGREDO_LOCAL_COM_MAIS_DE_32_CARACTERES' npm run test:db
+docker compose -f compose.aws-validation.yaml run --build --rm tests
+docker compose -f compose.aws-validation.yaml stop db
 ```
 
-Esse teste efetivamente cria um usuário temporário, confere a coluna `senha_hash`, realiza login e procura os eventos de auditoria na `tb_log`, removendo os dados temporários em seguida. Ele depende de MySQL 8, schema e seed de status inicializados; requer *dotenv* e variáveis correspondentes. **Executá-lo altera tabelas do banco selecionado**. Se o projeto usa WSL, rode diretamente no terminal WSL, não em PowerShell (sintaxe de atribuição de variáveis diferente).
+Os sete testes DB passaram em MySQL 8.0 e 8.4. Exercitam cadastro/login/hash/auditoria, cancelamento e concorrência real controlada, rejeição de vínculo alheio em ocorrências, revogação com novo login e filtros/paginação. Criam e limpam seus dados fictícios.
 
-## Commits para reproduzir o fluxo daqui para frente
+`npm run test:deploy` cobre sete cenários simulados de pré-verificação, promoção e rollback; não acessa AWS nem comprova configuração real do RDS. Comandos de host e coleta de evidências: [TESTES_E_EVIDENCIAS.md](TESTES_E_EVIDENCIAS.md).
 
-1. `test(auth): descreve cenário que inicialmente falha` — execute e registre falha.
-2. `feat(auth): implementa mínimo para teste passar` — execute e registre verde.
-3. `refactor(auth): extrai política sem alterar contrato` — execute todos os testes.
-4. `docs(tdd): anexa relatório de cobertura e evidências` — anexe prints na entrega.
+## Histórico e próximas evoluções
 
-Repetir esse padrão por hash, cadastro, login e log em novas evoluções ou laboratórios verdadeiros; NÃO reescrever histórico dos commits da Parte 2.
+Registrar teste que falha → implementação mínima → refatoração → evidência de validação. Os testes desta revisão protegem o comportamento atual; pesquisa, inventário, regras definitivas e integrações futuras precisarão de cenários próprios. Consultar [resultados e limites](VERIFICACAO_E_LIMITACOES.md).

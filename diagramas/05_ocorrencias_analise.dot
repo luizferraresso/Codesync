@@ -1,22 +1,22 @@
 digraph D {
-graph [rankdir=TB,bgcolor=white,ranksep="0.9",nodesep="0.45",pad="0.25",splines=polyline];
-node [shape=box,style="rounded,filled",fillcolor="#F6F8FB",color="#48637C",fontcolor="#12253A",fontname="DejaVu Sans",fontsize=11,margin="0.15,0.15"];
-edge [color="#53728D",arrowsize=0.7];
+graph [rankdir=TB,bgcolor=white,ranksep="1.1",nodesep="0.6",pad="0.3",splines=polyline];
+node [shape=box,style="rounded,filled",fillcolor="#F6F8FB",color="#48637C",fontcolor="#12253A",fontname="DejaVu Sans",fontsize=12,margin="0.18,0.16"];
+edge [color="#53728D",fontcolor="#39546B",fontname="DejaVu Sans",fontsize=10,arrowsize=0.7];
 {rank=same; "OccurrenceRoutes";}
-"OccurrenceRoutes" [label="OccurrenceRoutes\nGET /\nPOST /\nPATCH /:id/analise"];
+"OccurrenceRoutes" [label="OccurrenceRoutes\nGET / · GET /:id · POST /\nPATCH /:id/analise"];
 {rank=same; "OccurrenceController";}
-"OccurrenceController" [label="OccurrenceController\n+ create()\n+ review()"];
+"OccurrenceController" [label="OccurrenceController\n+ create() · get()\n+ review()"];
 {rank=same; "OccurrenceService";}
-"OccurrenceService" [label="OccurrenceService\n+ create()\n+ review()"];
+"OccurrenceService" [label="OccurrenceService\n+ create() · get() · review()\nproprietário e vínculos válidos\nanálise: somente ADMIN\nsem aplicar penalidade"];
 {rank=same; "SqlRepository"; "MySQLPool";}
 "SqlRepository" [label="SqlRepository\n+ findById()\n+ create()"];
-"MySQLPool" [label="MySQLPool\n+ execute()"];
+"MySQLPool" [label="MySQLPool\n+ execute()\nconsulta vínculos\natualiza análise"];
 {rank=same; "MySQL8";}
-"MySQL8" [label="MySQL8\ntb_ocorrencia\ntb_penalidade"];
+"MySQL8" [label="MySQL 8.0 / 8.4\ntb_ocorrencia · tb_reserva\ntb_reserva_guia · tb_item_reserva\ntb_tipo_quarto · tb_hotel\ntb_guia · tb_usuario"];
 "OccurrenceRoutes" -> "OccurrenceController";
 "OccurrenceController" -> "OccurrenceService";
-"OccurrenceService" -> "SqlRepository";
-"OccurrenceService" -> "MySQLPool";
-"SqlRepository" -> "MySQL8";
+"OccurrenceService" -> "SqlRepository" [label="alvo e reservas"];
+"OccurrenceService" -> "MySQLPool" [label="vínculos e análise"];
+"SqlRepository" -> "MySQLPool";
 "MySQLPool" -> "MySQL8";
 }

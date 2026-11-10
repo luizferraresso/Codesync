@@ -9,9 +9,12 @@ const requireAuth = asyncHandler(async (req, _res, next) => {
   try { claims = verifyToken(header.replace(/^Bearer\s+/i,'')); }
   catch { fail(401,'TOKEN_INVALIDO','Token ausente, invalido ou expirado'); }
   if (!/^\d+$/.test(String(claims.sub))) fail(401,'TOKEN_INVALIDO','Token invalido');
-  const user = await users.byId(claims.sub);
+  const user = await users.byId(claims.sub,true);
   if (!user || user.status !== 'ATIVO') fail(401,'USUARIO_INATIVO','Conta indisponivel');
-  req.user = user; // papel vem sempre do banco, nao do token
+  if (!Number.isInteger(claims.sv) || claims.sv !== Number(user.token_version || 0))
+    fail(401,'SESSAO_REVOGADA','Senha alterada; autentique novamente');
+  const {token_version, ...profile} = user;
+  req.user = profile; // papel vem sempre do banco, nao do token
   next();
 });
 const allowRoles = (...roles) => (req, _res, next) => {

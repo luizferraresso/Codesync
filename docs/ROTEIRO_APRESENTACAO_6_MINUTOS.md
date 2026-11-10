@@ -1,32 +1,26 @@
-# Roteiro de apresentação - Checkpoint 3 (6 minutos)
+# Roteiro de apresentação — seis minutos
 
-**Papéis genéricos:** trocar Integrante 1...5 pelos nomes reais. Não alegar evidências que ainda não foram coletadas.
+**Revisão: 28/10/2026.** Substituir Integrante 1…5 pelos nomes confirmados. Apresentar evidências já existentes e deixar claros os limites, sem atribuir testes locais à AWS.
 
-| Tempo | Pessoa | Tela/slide e fala sugerida |
+| Tempo | Pessoa | Tela e fala sugerida |
 |---|---|---|
-| 0:00–0:45 | Integrante 1 | Identificação CodeSync, problema HospedJá e objetivos: API REST modular e persistência MySQL. |
-| 0:45–1:50 | Integrante 1 + 2 | Diagrama de camadas e autenticação: routes/controllers/services/repositories; bcrypt/JWT e controle de papéis. |
-| 1:50–2:55 | Integrante 2 + 3 | Modelagem: 40 tabelas, DER CP2, hospedagens/quartos/guias, reservas e pagamentos preliminares. Abrir diagrama de reservas. |
-| 2:55–4:00 | Integrante 3 + 4 | TDD e qualidade: explicar Red/Green/Refactor como laboratório; mostrar resultado real do Jest/coverage se já tiver rodado. Swagger e rotas. |
-| 4:00–4:55 | Integrante 4 | Docker e AWS: mostrar ambiente local rodando se disponível; arquitetura EC2 + RDS privado; se não houver deploy, explicar que é roteiro pendente. |
-| 4:55–5:40 | Integrante 5 | Auditoria, ocorrências com análise humana e matriz de requisitos; diferenciar cobertura inicial de futuras integrações Mercado Pago/DeepSeek. |
-| 5:40–6:00 | Integrante 5 | Próximos passos e status: testes reais, URL pública, revisão do PDF e commits semanais. |
+| 0:00–0:45 | Integrante 1 | Identificar CodeSync/HospedJá e objetivo da API REST; distinguir backend atual de produto completo |
+| 0:45–1:50 | Integrantes 1 e 2 | Diagramas 01/02: módulos, acessos ao pool, bcrypt/UTF-8, JWT com versão de sessão e papel vindo do banco |
+| 1:50–2:55 | Integrantes 2 e 3 | Banco com 40 tabelas; diagrama 04: rascunho, autorização e transação compartilhada; disponibilidade/confirmação ainda pendentes |
+| 2:55–4:00 | Integrantes 3 e 4 | Exibir Jest/CI: 142 testes unitários/HTTP, 7 DB, 90,09% linhas; explicar que o laboratório TDD é reconstruído |
+| 4:00–4:55 | Integrante 4 | Swagger e Docker locais; MySQL 8.0/8.4 testados. Mostrar preflight/rollback como preparação e simulação, sem alegar deploy AWS comprovado |
+| 4:55–5:40 | Integrante 5 | Diagramas 03/05/06: auditoria best-effort, vínculos de ocorrências e análise humana; sem aplicação automática de penalidades |
+| 5:40–6:00 | Integrante 5 | PR #3 publicada com CI aprovada, revisão/merge pendentes; próximos incrementos e revisão acadêmica do PDF atualizado |
 
-## Slides / telas (7 telas)
+## Perguntas prováveis
 
-1. Capa: HospedJá / CodeSync / Grupo 3 / Checkpoint 3.
-2. Arquitetura de serviços Node.js + Express.js.
-3. MySQL: entidades e modelagem de reserva.
-4. Segurança: cadastro, login, JWT e controle de acesso.
-5. Testes: Jest, Supertest, laboratório TDD e cobertura **real**.
-6. Swagger, Docker, logs e AWS.
-7. Entregas, pendências, responsáveis e conclusão.
+- **O código foi todo criado com TDD?** Não. O laboratório Red/Green/Refactor foi construído depois da implementação inicial; novos incrementos devem registrar ciclos reais.
+- **Os testes usam banco real?** As suítes unitárias/HTTP usam mocks; sete testes de integração usam MySQL isolado. Informar os dois grupos separadamente.
+- **Por que a cobertura mudou?** A configuração antiga selecionava seis arquivos; agora mede todo `src`, com limiares globais e resultado registrado de 90,09% de linhas.
+- **A troca de senha invalida tokens antigos?** Sim; a versão da sessão é incrementada junto com o hash e conferida em cada autenticação.
+- **A reserva está pronta para uso comercial?** Não; são rascunhos, sem inventário por período, cotação e confirmação definitiva. Integrações externas permanecem no backlog.
+- **Onde está a AWS?** Existe relato de um integrante, mas o acesso e a URL não foram disponibilizados para validação. Foram concluídos compatibilidade local e testes simulados do procedimento.
+- **As ocorrências aplicam punição?** Não. ADMIN analisa o registro; a API de aplicação manual ainda não foi implementada.
+- **A auditoria é garantida na mesma transação?** Não. Ela é sanitizada e exercitada, mas best-effort após a resposta; uma garantia transacional é evolução pendente.
 
-## Perguntas prováveis do professor
-
-- **Onde o TDD foi usado?** Há testes e laboratório Red/Green/Refactor reconstruído; o grupo precisa demonstrar evolução test-first em novos commits.
-- **O Mercado Pago está integrado?** Não; existe preparação de tabelas/endpoints, sem webhook real.
-- **Por que o cancelamento não tem reembolso?** A API atual só cancela rascunhos sem pagamentos. Estorno pertence à etapa de regra de negócio/gateway.
-- **Onde está o deploy na nuvem?** O roteiro e scripts existem, mas a URL pública só será apresentada após implantação e verificação reais.
-- **Como evitar punição automática?** Ocorrências são analisadas por ADMIN; não há aplicação automática de penalidades.
-- **Como validaram os requisitos?** Matriz em `docs/MATRIZ_REQUISITOS_CP2.md`; a maioria é parcial ou pendente neste checkpoint.
+Links e evidências: [documentação](README.md), [verificação](VERIFICACAO_E_LIMITACOES.md), [matriz](MATRIZ_REQUISITOS_CP2.md) e [guia do PDF](PDF_UNICO_E_ENTREGA.md).

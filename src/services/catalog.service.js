@@ -30,18 +30,19 @@ async function parentIsActive(type,item) {
   const hotel = await sql.findById('tb_hotel','id_hotel',item.id_hotel);
   return hotel?.status === 'ATIVO';
 }
-async function list(type, user) {
+async function list(type, user, pagination = {limit:100,offset:0}) {
   const cfg = MODELS[type];
-  const result = await sql.list(cfg.table);
-  if (admin(user)) return result;
+  if (admin(user)) return sql.list(cfg.table,{},pool,pagination);
   if (type === 'quartos') {
     const [rows] = await pool.query(`SELECT q.* FROM tb_tipo_quarto q
       JOIN tb_hotel h ON h.id_hotel=q.id_hotel
       WHERE q.status='DISPONIVEL' AND h.status='ATIVO'
-      ORDER BY q.id_tipo_quarto DESC LIMIT 100`);
+      ORDER BY q.id_tipo_quarto DESC LIMIT ? OFFSET ?`,[pagination.limit,pagination.offset]);
     return rows;
   }
-  return result.filter(item => visible(type,item)).map(item => output(type,item,user));
+  const criteria = type === 'guias' ? {status:'ATIVO',status_aprovacao:'APROVADO'} : {status:'ATIVO'};
+  const result = await sql.list(cfg.table,criteria,pool,pagination);
+  return result.map(item => output(type,item,user));
 }
 async function get(type, id, user) {
   const cfg = MODELS[type];

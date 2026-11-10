@@ -5,6 +5,7 @@ const readline = require('readline');
 const pool = require('../config/database');
 const users = require('../repositories/user.repository');
 const { hashPassword } = require('../utils/security');
+const { password } = require('../validators/schemas');
 
 function ask(question, hidden = false) {
   return new Promise((resolve, reject) => {
@@ -34,7 +35,7 @@ function ask(question, hidden = false) {
   const nome = (await ask('Nome do administrador: ')).trim();
   if (!nome || nome.length > 120) throw new Error('Nome invalido');
   const senha = await ask('Senha forte inicial (oculta): ',true);
-  if (senha.length < 10 || senha.length > 72) throw new Error('Senha deve conter 10 a 72 caracteres');
+  if (!password.safeParse(senha).success) throw new Error('Senha deve conter pelo menos 10 caracteres e no maximo 72 bytes UTF-8');
   const id = await users.create({nome,email,senha_hash:await hashPassword(senha),tipo_usuario:'ADMIN'});
   process.stdout.write(`Conta administrativa criada com id ${id}. Altere a senha apos o primeiro login.\n`);
 })().catch(e=>{

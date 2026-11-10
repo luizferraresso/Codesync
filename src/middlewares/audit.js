@@ -4,8 +4,8 @@
 const audit = require('../services/audit.service');
 
 function auditMiddleware(req, res, next) {
+  const fullPath = req.originalUrl.split('?')[0];
   res.on('finish', () => {
-    const fullPath = req.originalUrl.split('?')[0];
     if (fullPath === '/health') return;
     if (!['POST','PUT','PATCH','DELETE'].includes(req.method)) return;
     const segments = fullPath.split('/').filter(Boolean);
@@ -18,6 +18,8 @@ function auditMiddleware(req, res, next) {
         action = 'AUTENTICACAO';
       } else if (segments[3] === 'register') {
         action = 'CADASTRO';
+      } else if (segments[3] === 'password') {
+        action = 'ALTERACAO_SENHA';
       } else {
         action = `AUTH_${req.method}`;
       }

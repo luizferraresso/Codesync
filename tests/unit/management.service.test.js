@@ -1,0 +1,15 @@
+jest.mock('../../src/config/database',()=>({execute:jest.fn()}));
+jest.mock('../../src/repositories/sql.repository');
+jest.mock('../../src/repositories/user.repository');
+const pool=require('../../src/config/database'),sql=require('../../src/repositories/sql.repository'),users=require('../../src/repositories/user.repository');
+const manager=require('../../src/services/manager.service'),service=require('../../src/services/user.service');
+beforeEach(()=>{jest.resetAllMocks();sql.findById.mockResolvedValue({id_hotel:'1'});users.byId.mockResolvedValue({id_usuario:'2',tipo_usuario:'GESTOR_HOSPEDAGEM',status:'ATIVO'});pool.execute.mockResolvedValue([{affectedRows:1}]);});
+test('vincula gestor ativo',async()=>expect(await manager.attach('1','2')).toMatchObject({ativo:true}));
+test('hotel inexistente nao recebe gestor',async()=>{sql.findById.mockResolvedValue(null);await expect(manager.attach('1','2')).rejects.toMatchObject({status:404});});
+test.each([null,{tipo_usuario:'CLIENTE',status:'ATIVO'},{tipo_usuario:'GESTOR_HOSPEDAGEM',status:'INATIVO'}])('recusa gestor invalido %j',async user=>{users.byId.mockResolvedValue(user);await expect(manager.attach('1','2')).rejects.toMatchObject({status:422});});
+test('desvincula sem excluir historico',async()=>expect(await manager.detach('1','2')).toMatchObject({ativo:false}));
+test('desvinculo inexistente retorna 404',async()=>{pool.execute.mockResolvedValue([{affectedRows:0}]);await expect(manager.detach('1','2')).rejects.toMatchObject({status:404});});
+test('usuario inexistente retorna 404',async()=>{users.byId.mockResolvedValue(null);await expect(service.get('2')).rejects.toMatchObject({status:404});});
+test('atualiza perfil proprio',async()=>{await service.updateOwn('2',{nome:'Outro'});expect(users.update).toHaveBeenCalledWith('2',{nome:'Outro'});});
+test.each(['ATIVO','INATIVO','BLOQUEADO'])('admin aplica status permitido %s',async status=>{await service.adminSetStatus('2',status);expect(users.update).toHaveBeenCalledWith('2',{status});});
+test('status fora da lista e recusado',async()=>await expect(service.adminSetStatus('2','ADMIN')).rejects.toMatchObject({status:422}));

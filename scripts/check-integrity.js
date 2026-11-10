@@ -1,7 +1,8 @@
 'use strict';
-// Checagem estatica sem instalar dependencias (nao substitui Jest/Supertest).
+// Checagem estrutural e sintatica de YAML (nao substitui Jest/Supertest).
 const fs = require('node:fs');
 const path = require('node:path');
+const yaml = require('yamljs');
 const root=path.resolve(__dirname,'..');
 const src=path.join(root,'src');
 const schema=fs.readFileSync(path.join(root,'database/01_schema.sql'),'utf8');
@@ -24,6 +25,10 @@ function walk(dir){for(const e of fs.readdirSync(dir,{withFileTypes:true})){
 walk(src);
 const core=['tb_usuario','tb_hotel','tb_tipo_quarto','tb_guia','tb_reserva','tb_pagamento','tb_ocorrencia','tb_log','tb_reserva_status','tb_pagamento_status'];
 for(const table of core)if(!tables.has(table))errors.push('Tabela faltando no schema: '+table);
+for(const file of ['compose.yaml','compose.integration.yaml','compose.aws-validation.yaml','src/docs/openapi.yaml','.github/workflows/backend-tests.yml']) {
+  try { yaml.parse(fs.readFileSync(path.join(root,file),'utf8')); }
+  catch(err) { errors.push(`YAML invalido: ${file}: ${err.message}`); }
+}
 console.log(`Integridade: ${checked} modulos; ${refs} imports relativos; ${tables.size} tabelas; ${errors.length} problemas.`);
 errors.forEach(e=>console.error(e));
 if(errors.length)process.exitCode=1;

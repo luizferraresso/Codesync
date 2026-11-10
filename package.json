@@ -12,6 +12,12 @@
     "dev": "node --watch src/server.js",
     "check": "node scripts/check-project.js",
     "integrity": "node scripts/check-integrity.js",
+    "db:migrate": "node scripts/migrate.js",
+    "setup:local": "node scripts/setup-local-env.js",
+    "test:docker": "docker compose -f compose.integration.yaml run --build --rm tests",
+    "test:deploy": "node scripts/test-deploy.js",
+    "checksums": "node scripts/checksums.js",
+    "checksums:update": "node scripts/checksums.js --write",
     "test": "jest --runInBand",
     "test:unit": "jest --runInBand tests/unit",
     "test:http": "jest --runInBand tests/http",
@@ -30,10 +36,10 @@
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.15.0",
-    "winston": "^3.17.0",
-    "zod": "^3.24.2",
     "swagger-ui-express": "^5.0.1",
-    "yamljs": "^0.3.0"
+    "winston": "^3.17.0",
+    "yamljs": "^0.3.0",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "jest": "^29.7.0",

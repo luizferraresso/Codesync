@@ -1,0 +1,39 @@
+name: hospedja-aws-validation
+services:
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: ${TEST_MYSQL_ROOT_PASSWORD:?Defina TEST_MYSQL_ROOT_PASSWORD no .env}
+      MYSQL_DATABASE: hospedja
+      MYSQL_USER: hospedja_teste
+      MYSQL_PASSWORD: ${TEST_DB_PASSWORD:?Defina TEST_DB_PASSWORD no .env}
+    volumes:
+      - mysql_aws_validation:/var/lib/mysql
+      - ./database/01_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+      - ./aws/02_status_basicos.sql:/docker-entrypoint-initdb.d/02_status_basicos.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+  tests:
+    build:
+      context: .
+      target: test
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: test
+      RUN_DB_TESTS: '1'
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: hospedja
+      DB_USER: hospedja_teste
+      DB_PASSWORD: ${TEST_DB_PASSWORD:?Defina TEST_DB_PASSWORD no .env}
+      JWT_SECRET: segredo_ficticio_apenas_compatibilidade_aws_com_32_caracteres
+      LOG_LEVEL: error
+    command: ["sh", "-c", "npm run check && npm run integrity && npm run test:coverage && npm run db:migrate && npm run test:db"]
+volumes:
+  mysql_aws_validation:

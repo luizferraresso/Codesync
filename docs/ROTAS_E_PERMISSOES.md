@@ -1,6 +1,8 @@
-# Contratos REST — HospedJá CP3 / Parte 2
+# Contratos REST e permissões — HospedJá
 
-Prefixo: `/api/v1`. Resposta de sucesso: `{ "data": ... }`; falha: `{ "error": { "code": "...", "message": "..." } }`.
+**Revisão: 28/10/2026.** Escopo atual, validado localmente; consulte [evidências](VERIFICACAO_E_LIMITACOES.md).
+
+Prefixo dos endpoints de negócio: `/api/v1`. Resposta de sucesso: `{ "data": ... }`; falha: `{ "error": { "code": "...", "message": "..." } }`.
 
 Perfis: `CLIENTE`, `ADMIN`, `OPERADOR_SAC`, `GESTOR_HOSPEDAGEM`, `GUIA`. O perfil **nunca** é fornecido no cadastro público e é sempre consultado no banco, não confiado do JWT.
 
@@ -10,8 +12,8 @@ Perfis: `CLIENTE`, `ADMIN`, `OPERADOR_SAC`, `GESTOR_HOSPEDAGEM`, `GUIA`. O perfi
 |---|---|---|---|
 | GET | `/health` (sem prefixo) | Público | Verifica processo e conexão MySQL |
 | POST | `/auth/register` | Público, limitador de tentativas | Cria CLIENTE; bcrypt |
-| POST | `/auth/login` | Público, limitador de tentativas | Emite JWT com sub ID |
-| PATCH | `/auth/password` | Autenticado | Troca senha após validar senha atual |
+| POST | `/auth/login` | Público, limitador de tentativas | Emite JWT com sub ID e sv (versão da sessão) |
+| PATCH | `/auth/password` | Autenticado | Valida senha atual, atualiza hash/versão atomicamente e revoga tokens anteriores |
 | GET | `/usuarios/me` | Autenticado | Próprio perfil sem hash |
 | PATCH | `/usuarios/me` | Autenticado | Atualiza nome, telefone e nascimento |
 | GET | `/usuarios` | ADMIN | Lista 100 perfis sem hashes |
@@ -37,12 +39,22 @@ Perfis: `CLIENTE`, `ADMIN`, `OPERADOR_SAC`, `GESTOR_HOSPEDAGEM`, `GUIA`. O perfi
 | PATCH | `/reservas/:id` | Proprietário ou ADMIN | Edita observações de pendente |
 | DELETE | `/reservas/:id` | Proprietário ou ADMIN | Cancela somente rascunho SEM pagamento |
 | GET | `/pagamentos`, `/pagamentos/:id` | Proprietário ou ADMIN | Histórico próprio, sem transação externa no retorno ao cliente |
-| POST | `/pagamentos` | ADMIN | Cria lançamento preliminar PENDENTE, sem cobrança |
+| POST | `/pagamentos` | ADMIN | Bloqueia/valida a reserva na transação e cria lançamento PENDENTE, sem cobrança |
 | GET | `/ocorrencias`, `/ocorrencias/:id` | Autor ou ADMIN | Consulta próprio registro |
-| POST | `/ocorrencias` | Autenticado | Abre ocorrência |
+| POST | `/ocorrencias` | Autenticado | Abre ocorrência; valida propriedade/coerência das reservas e alvos informados |
 | PATCH | `/ocorrencias/:id/analise` | ADMIN | Análise e decisão HUMANA, sem punição |
 
 Endereços, fotos, favoritados, hóspedes, histórico, SAC e reservas de guia estão modelados em MySQL, **mas não receberam CRUD HTTP nesta primeira versão de API**. Não confundir estrutura de banco preparada com endpoint implementado.
+
+## Sessão, paginação e limites
+
+JWT `sv` deve corresponder a `tb_usuario.token_version`; conta precisa estar ativa. O papel vem do banco. Após trocar a senha, fazer novo login. Bcrypt/cadastro/troca limitam senhas novas a 72 bytes UTF-8, com mínimo de 10 caracteres.
+
+GET das listas `/hoteis`, `/quartos` e `/guias` aceita `limit` de 1 a 100 (padrão 100) e `offset` de 0 a 1000000 (padrão 0); filtra visibilidade antes do limite. As demais listagens mantêm limites internos, sem essa paginação. Consultas individuais podem permitir registro inativo ao ADMIN ou proprietário autorizado, conforme o domínio.
+
+IDs são strings dentro de BIGINT UNSIGNED; quantidades e valores respeitam tipos SQL. `quantidade_disponivel` admite até 65535 e não significa disponibilidade por período.
+
+Health não usa envelope data: retorna `{status:"ok",service:"hospedja-api"}`. `/openapi.json` retorna a própria especificação; troca de senha usa 204 sem corpo.
 
 ## Exemplos de JSON
 
@@ -101,11 +113,12 @@ Análise humana: `PATCH /ocorrencias/1/analise` (ADMIN):
 - `200` consulta/edição; `201` cadastro/criação; `204` troca de senha;
 - `400` JSON malformado; `401` login/token inválido; `403` falta de permissão;
 - `404` registro/rota ausente; `409` duplicado ou transição não permitida;
+- `413` corpo JSON acima de 100kb;
 - `422` campo inválido, FK inexistente ou regra simples de entrada; `429` limite de tentativas; `500` falha inesperada.
 
 ## Pendências para validação final
 
-- Testes de integração contra MySQL 8 real e correção de qualquer incompatibilidade observada.
-- TDD documentado com Jest/Supertest e cobertura (Parte 3).
-- OpenAPI/Swagger com schemas e exemplos (Parte 3).
+- Manter/ampliar os testes de integração já aprovados em MySQL 8.0/8.4.
+- Completar contratos de resposta OpenAPI e cenários das funcionalidades futuras; abrir Swagger não garante todo o contrato.
+- Exercitar permissões e TLS no ambiente AWS real, ainda sem acesso nesta revisão.
 - Revisar permissões de operações administrativas em produção, controles de concorrência, disponibilidade, preços, pagamentos e auditoria transacional.

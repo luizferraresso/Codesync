@@ -13,11 +13,33 @@ services:
     volumes:
       - mysql_integration_data:/var/lib/mysql
       - ./database/01_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+      - ./aws/02_status_basicos.sql:/docker-entrypoint-initdb.d/02_status_basicos.sql:ro
     healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p"$$MYSQL_ROOT_PASSWORD" --silent"]
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
       interval: 10s
       timeout: 5s
       retries: 20
       start_period: 30s
+  tests:
+    profiles: [tests]
+    build:
+      context: .
+      target: test
+    depends_on:
+      db_integration:
+        condition: service_healthy
+    environment:
+      NODE_ENV: test
+      RUN_DB_TESTS: '1'
+      DB_HOST: db_integration
+      DB_PORT: 3306
+      DB_NAME: hospedja
+      DB_USER: hospedja_teste
+      DB_PASSWORD: ${TEST_DB_PASSWORD:?Defina TEST_DB_PASSWORD no .env}
+      JWT_SECRET: segredo_ficticio_somente_integracao_com_mais_de_32_caracteres
+      LOG_LEVEL: error
+    volumes:
+      - ./coverage:/app/coverage
+    command: ["sh", "-c", "npm run check && npm run integrity && npm run test:coverage && npm run db:migrate && npm run test:db && npm run test:tdd:green && npm run test:tdd:refactor"]
 volumes:
   mysql_integration_data:

@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS tb_usuario (
   nome VARCHAR(120) NOT NULL,
   email VARCHAR(190) NOT NULL,
   senha_hash VARCHAR(255) NOT NULL,
+  token_version INT UNSIGNED NOT NULL DEFAULT 0,
   cpf CHAR(11) NULL,
   telefone VARCHAR(20) NULL,
   data_nascimento DATE NULL,

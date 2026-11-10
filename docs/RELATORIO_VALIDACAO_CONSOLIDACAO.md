@@ -1,5 +1,7 @@
 # Relatório de verificação da consolidação - 24/10/2026
 
+> **Registro histórico da consolidação original.** Resultados e limitações descritos abaixo pertencem àquela versão. Para o estado validado em 28/10/2026, consulte a [documentação atual](README.md); não usar estes passos antigos como guia operacional.
+
 Este relatório descreve **verificações executadas localmente sobre os arquivos**, sem inferir que os serviços estejam rodando.
 
 ## Verificações realizadas (resultado confirmado)

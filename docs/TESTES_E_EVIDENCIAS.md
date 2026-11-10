@@ -1,15 +1,18 @@
 # Plano prático de validação e evidências
 
+**Atualização: 28/10/2026.** Resultados executados: 142 testes unitários/HTTP, 7 de integração e 90,09% linhas de todo src; [detalhes e limites](VERIFICACAO_E_LIMITACOES.md). Os checklists abaixo são roteiros de reprodução, não evidência de que cada cenário foi exercitado integralmente.
+
 ## 1. Preparação
 
 - Instalar Node.js 22 e Docker Engine/Compose. Abrir a pasta raiz do projeto.
 - Copiar `.env.example` para `.env`, ajustar credenciais fortes e `JWT_SECRET` (mínimo 32 caracteres). Para Compose, incluir `MYSQL_ROOT_PASSWORD`.
-- Instalar dependências (`npm install`) e **gerar/commitar `package-lock.json`**. O ZIP não inclui lockfile porque este ambiente não conseguiu instalar dependências npm.
+- Instalar as versões fixadas com `npm ci` (`npm.cmd ci` no PowerShell com scripts desabilitados). O projeto inclui lockfile.
+- Para preparar desenvolvimento local automaticamente, executar `node scripts/setup-local-env.js`; não sobrescreve `.env` existente.
 
 ## 2. Banco e API local
 
 ```bash
-docker compose up --build -d
+docker compose up --build -d --wait
 docker compose ps
 curl -i http://localhost:3000/health
 curl -i http://localhost:3000/openapi.json
@@ -34,6 +37,16 @@ O laboratório Red é intencionalmente falho. Não confundir com falhas dos test
 
 ## 4. MySQL isolado para Jest real
 
+Forma recomendada, com Node.js 22 e MySQL 8 em contêineres:
+
+```bash
+node scripts/setup-local-env.js
+npm run test:docker
+docker compose -f compose.integration.yaml stop db_integration
+```
+
+Isso executa sintaxe, integridade/YAML, cobertura, migração, integração real, concorrência e TDD Green/Refactor. O banco isolado recebe apenas schema e status básicos, sem usuários do seed de demonstração. O volume de desenvolvimento da API não é usado. Para uma configuração existente anterior à coluna `token_version`, aplique `npm run db:migrate` com as credenciais desse banco antes de iniciar a API; a migração é idempotente e preserva os dados.
+
 O arquivo `compose.integration.yaml` cria **outro volume** e publica MySQL em `127.0.0.1:3308`.
 
 ```bash
@@ -46,6 +59,16 @@ npm run test:db
 ```
 
 O teste de integração cria dados temporários e limpa ao final. **Não apontar para um banco de produção.**
+
+Compatibilidade AWS, sem acesso à conta:
+
+```bash
+docker compose -f compose.aws-validation.yaml run --build --rm tests
+docker compose -f compose.aws-validation.yaml stop db
+npm run test:deploy
+```
+
+O primeiro usa MySQL 8.4 isolado, sem publicar portas. O último executa sete cenários com comandos AWS/Docker simulados; não provisiona recursos e não comprova o ambiente remoto.
 
 ## 5. Checklist de smoke tests HTTP
 
