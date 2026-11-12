@@ -1,0 +1,62 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Apresentacao: Subir API e MySQL",
+      "type": "shell",
+      "command": "npm",
+      "args": [
+        "run",
+        "demo:up"
+      ],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Apresentacao: Consultar banco (SQL real)",
+      "type": "shell",
+      "command": "npm",
+      "args": [
+        "run",
+        "demo:sql"
+      ],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Apresentacao: Parar ambiente local",
+      "type": "shell",
+      "command": "npm",
+      "args": [
+        "run",
+        "demo:stop"
+      ],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Apresentacao: MySQL interativo (SELECT INSERT DELETE)",
+      "type": "shell",
+      "command": "npm",
+      "args": [
+        "run",
+        "demo:mysql"
+      ],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "focus": true
+      }
+    }
+  ]
+}

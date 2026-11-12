@@ -1,55 +1,95 @@
+# Somente demonstracao LOCAL: dados ficticios persistidos no MySQL Docker.
+# Execute Send Request na ordem. Para outra rodada altere @rodada e o SET @email no SQL.
 @base = http://localhost:3000
+@rodada = apresentacao-01
+@email = {{rodada}}@example.test
+@senha = DemoLocal#2026!
 
-### 1. Login correto
+### 1. Saude e conexao real com MySQL => 200
+GET {{base}}/health
+
+### 2. Cadastro => 201 (409 se esta rodada ja existe; prossiga ao login)
+# @name cadastro
+POST {{base}}/api/v1/auth/register
+Content-Type: application/json
+
+{"nome":"Aluno Apresentacao","email":"{{email}}","senha":"{{senha}}"}
+
+### 3. Mesmo cadastro => 409
+POST {{base}}/api/v1/auth/register
+Content-Type: application/json
+
+{"nome":"Aluno Apresentacao","email":"{{email}}","senha":"{{senha}}"}
+
+### 4. Login com senha errada => 401
+POST {{base}}/api/v1/auth/login
+Content-Type: application/json
+
+{"email":"{{email}}","senha":"SenhaErrada123"}
+
+### 5. Login correto => 200; guarda token para os proximos passos
 # @name login
 POST {{base}}/api/v1/auth/login
 Content-Type: application/json
 
-{"email":"Joao@gmail.com","senha":"Algosenha123"}
+{"email":"{{email}}","senha":"{{senha}}"}
 
-### 2. Login com senha errada
-POST {{base}}/api/v1/auth/login
-Content-Type: application/json
+### 6. Perfil persistido => 200, sem senha/hash
+GET {{base}}/api/v1/usuarios/me
+Authorization: Bearer {{login.response.body.$.data.token}}
 
-{"email":"cliente@hospedja.example","senha":"SenhaErrada123"}
+### 7. Sem token => 401
+GET {{base}}/api/v1/usuarios/me
 
-### 3. Cadastro de usuario novo
+### 8. Cliente tentando listar usuarios (ADMIN) => 403
+GET {{base}}/api/v1/usuarios
+Authorization: Bearer {{login.response.body.$.data.token}}
+
+### 9. Tentativa de escolher perfil ADMIN no cadastro => 422
 POST {{base}}/api/v1/auth/register
 Content-Type: application/json
 
-{"nome":"Joao","email":"Joao@gmail.com","senha":"Algosenha123"}
+{"nome":"Tentativa de privilegio","email":"{{email}}","senha":"{{senha}}","tipo_usuario":"ADMIN"}
 
-### 4. Cadastro repetido (deve dar erro 409)
-POST {{base}}/api/v1/auth/register
-Content-Type: application/json
-
-{"nome":"Teste Log","email":"teste-log@example.com","senha":"Exemplo#Seguro2026"}
-
-### 5. Criar reserva (usa o token do login)
+### 10. Criar reserva em rascunho => 201, status PENDENTE e total zero
+# Datas relativas: nao expiram antes da apresentacao.
+# @name reserva
 POST {{base}}/api/v1/reservas
 Authorization: Bearer {{login.response.body.$.data.token}}
 Content-Type: application/json
 
-{"checkin":"2027-06-15","checkout":"2027-07-15","quantidade_hospedes":1,"observacoes":"MIAMI"}
+{"checkin":"{{$datetime 'YYYY-MM-DD' 30 d}}","checkout":"{{$datetime 'YYYY-MM-DD' 32 d}}","quantidade_hospedes":1,"observacoes":"Demonstracao {{rodada}}"}
 
-### 7. Login do ADMIN
+### 11. Consultar a MESMA reserva => 200
+GET {{base}}/api/v1/reservas/{{reserva.response.body.$.data.id_reserva}}
+Authorization: Bearer {{login.response.body.$.data.token}}
+
+### 12. Listar guias do seed local => 200
+# @name guias
+GET {{base}}/api/v1/guias
+
+### 13. Abrir ocorrencia sobre o guia retornado => 201 (apenas exemplo ficticio)
+# @name ocorrencia
+POST {{base}}/api/v1/ocorrencias
+Authorization: Bearer {{login.response.body.$.data.token}}
+Content-Type: application/json
+
+{"tipo_alvo":"GUIA","id_alvo":"{{guias.response.body.$.data[0].id_guia}}","tipo_ocorrencia":"DEMONSTRACAO_ACADEMICA","descricao":"Relato ficticio da rodada {{rodada}} para demonstrar analise humana."}
+
+### 14. Login ADMIN do seed LOCAL => 200
 # @name admin
 POST {{base}}/api/v1/auth/login
 Content-Type: application/json
 
 {"email":"admin@hospedja.example","senha":"Admin#CP3_2026!"}
 
-### 8. Abrir ocorrência contra o guia 1 (usa o login do cliente)
-# @name ocorrencia
-POST {{base}}/api/v1/ocorrencias
-Authorization: Bearer {{login.response.body.$.data.token}}
-Content-Type: application/json
-
-{"tipo_alvo":"GUIA","id_alvo":"1","tipo_ocorrencia":"ABANDONO_DA_TRILHA","descricao":"Guia abandonou o grupo durante a trilha"}
-
-### 9. Admin analisa a ocorrência (decisão humana)
+### 15. Analise humana => 200; nao aplica penalidade automaticamente
 PATCH {{base}}/api/v1/ocorrencias/{{ocorrencia.response.body.$.data.id_ocorrencia}}/analise
 Authorization: Bearer {{admin.response.body.$.data.token}}
 Content-Type: application/json
 
-{"status":"PROCEDENTE","analise":"Guia realmente aba'ndonou o grupo, conforme relatos e evidências apresentadas."}
+{"status":"IMPROCEDENTE","analise":"Exemplo ficticio apresentado ao orientador; sem infracao real."}
+
+### 16. Cliente consulta resultado da sua ocorrencia => 200
+GET {{base}}/api/v1/ocorrencias/{{ocorrencia.response.body.$.data.id_ocorrencia}}
+Authorization: Bearer {{login.response.body.$.data.token}}

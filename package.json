@@ -25,7 +25,11 @@
     "test:coverage": "jest --runInBand --coverage",
     "test:tdd:red": "node scripts/tdd-runner.js red",
     "test:tdd:green": "node scripts/tdd-runner.js green",
-    "test:tdd:refactor": "node scripts/tdd-runner.js refactor"
+    "test:tdd:refactor": "node scripts/tdd-runner.js refactor",
+    "demo:up": "node scripts/demo.js up",
+    "demo:sql": "node scripts/demo.js sql",
+    "demo:stop": "node scripts/demo.js stop",
+    "demo:mysql": "node scripts/demo.js mysql"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
