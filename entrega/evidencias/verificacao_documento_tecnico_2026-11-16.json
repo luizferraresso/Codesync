@@ -84,12 +84,16 @@
   "erros": [],
   "arquivos": {
     "HospedJa_Documento_Tecnico_Checkpoint3_2026-11-16.pdf": {
-      "bytes": 765119,
-      "sha256": "031364e07cd008d671d0b30bb509d389a53542e5ddb9a0335582190dd38c9212"
+      "bytes": 768191,
+      "sha256": "6bfce0451cecf93fe7cbfbf4f9d4da7c7f249bab6d89a97964cb10a3dd8eb971"
     },
     "HospedJa_Documento_Tecnico_Checkpoint3_2026-11-16.docx": {
-      "bytes": 576065,
-      "sha256": "ce43aafd08a5d460261d4eb1c54b3917e3dcf5e8677bd9581a12bbd4cc166eda"
+      "bytes": 576354,
+      "sha256": "54b5e82ff78434487e6107917bef7c26a0e41a62e5d79b712a23ca91f0a86edb"
     }
-  }
+  },
+  "commit_referencia_main": "66fab2540930cf7152715798a3c7362b6cdf3a31",
+  "commit_url": "https://github.com/luizferraresso/Codesync/commit/66fab2540930cf7152715798a3c7362b6cdf3a31",
+  "commit_na_capa": true,
+  "links_commit_pdf": 2
 }

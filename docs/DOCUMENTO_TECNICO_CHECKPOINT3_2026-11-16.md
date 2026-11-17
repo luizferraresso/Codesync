@@ -4,6 +4,8 @@ Projeto de Software 2 · UNIUBE · CodeSync · Grupo 3
 
 **Data:** 16/11/2026. **Versão da aplicação:** 0.3.0.
 
+**Commit de referência na main:** [66fab2540930cf7152715798a3c7362b6cdf3a31](https://github.com/luizferraresso/Codesync/commit/66fab2540930cf7152715798a3c7362b6cdf3a31).
+
 **Finalidade:** registrar a construção do backend, a modelagem e a persistência no banco, a implantação na nuvem, as regras implementadas, os resultados verificados e o trabalho necessário para concluir o produto. Este relatório consolida a documentação técnica do Checkpoint 3, atualizada em 16/11/2026.
 
 **Integrantes:** Luiz Felipe Ferraresso; Joao Lucas; Vitor; Enzo; Igor.
@@ -130,7 +132,7 @@ As 12 dependências diretas de produção foram conferidas na imagem; Jest e Sup
 
 O ambiente local desta revisão utilizou Node.js 24.22.1. A instância isolada de MySQL usada nos 16 testes de integração foi 9.6.0. Os arquivos Compose mantêm MySQL 8.0 para desenvolvimento/integração e MySQL 8.4 para compatibilidade com AWS. A CI solicita Node.js 22 e MySQL 8.0. Essas diferenças são declaradas para não confundir ambiente local com o RDS 8.4.11 efetivamente hospedado.
 
-O GitHub Actions possui jobs de sintaxe/integridade/cobertura e integração MySQL. Usa `actions/checkout@v4`, `actions/setup-node@v4` e `actions/upload-artifact@v4`. A existência do workflow não comprova que a versão atual foi executada nele: a CI desta atualização não foi disparada nesta sessão.
+O GitHub Actions possui jobs de sintaxe/integridade/cobertura e integração MySQL. Usa `actions/checkout@v4`, `actions/setup-node@v4` e `actions/upload-artifact@v4`. Os resultados atuais da CI devem ser consultados no GitHub para o commit de referência; as capturas de testes deste relatório correspondem à execução local.
 
 ### 3.4. Ferramentas de documentação e artefatos
 
@@ -366,6 +368,7 @@ O deploy prepara código isolado, identifica a imagem pela revisão, valida sche
 | Evidência operacional | Registro desta atualização |
 |---|---|
 | Revisão implantada | 5fa7f2ebc6aa18ac695539feb12045a8956730b5 |
+| Commit de referência na main | 66fab2540930cf7152715798a3c7362b6cdf3a31 |
 | Snapshot anterior às alterações | hospedja-pre-documentos-20261116, confirmado available |
 | Estado final da aplicação | healthy, usuário node e zero reinícios na conferência do deploy |
 | Schema | Migração 002 aplicada e preflight aprovado |
@@ -374,7 +377,7 @@ O deploy prepara código isolado, identifica a imagem pela revisão, valida sche
 
 Havia uma conta antiga de demonstração sem CPF. Sua exclusão foi autorizada pelo operador após conferir ausência de vínculos de negócio e disponibilidade do snapshot. Seus dois logs foram preservados. Não foram preenchidos documentos fictícios em contas reais.
 
-A revisão da imagem identifica o snapshot de código preparado na release da EC2. Isso não representa um push ou merge desse commit no GitHub. A publicação/revisão do conjunto de alterações no repositório da equipe continua como etapa de controle de versão.
+A revisão da imagem identifica o snapshot de código preparado na release da EC2. O commit de referência [66fab2540930cf7152715798a3c7362b6cdf3a31](https://github.com/luizferraresso/Codesync/commit/66fab2540930cf7152715798a3c7362b6cdf3a31), na branch main, consolida as alterações de CPF/CNPJ, auditoria, testes, documentação e imagens desta entrega. Os identificadores são distintos porque a release da EC2 foi preparada antes da consolidação no repositório. Este PDF foi atualizado para referenciar esse commit.
 
 A configuração HTTPS de 29/10 registrou certificado de IP com renovação automatizada. Um endereço estável, acompanhamento da renovação e ensaio de restauração permanecem itens operacionais importantes. Nenhum backup foi restaurado como parte desta revisão.
 
@@ -402,7 +405,7 @@ A finalização depende de completar um fluxo de uso de ponta a ponta, além de 
 
 | Prioridade / etapa | Trabalho necessário | Critério de conclusão |
 |---|---|---|
-| 1. Fechar entrega técnica | Revisar alterações, publicar no repositório e executar CI; identificação e evidências já incluídas neste relatório | Revisão identificada e checks aprovados no repositório da equipe |
+| 1. Manter controle da entrega | Alterações consolidadas na main; acompanhar a CI do commit de referência e manter a revisão da equipe | Commit identificado neste relatório e verificações remotas acompanhadas |
 | 2. Definir contratos do produto | Revisar requisitos, telas, permissões e estados com a equipe | Backlog e critérios de aceite confirmados; OpenAPI coerente |
 | 3. Frontend inicial | Construir login/cadastro, catálogo, detalhe, perfil e interfaces por papel | Telas responsivas consumindo a API publicada e exibindo erros corretos |
 | 4. Pesquisa e disponibilidade | Destino, datas, capacidade, filtros, calendário/estoque e consultas por intervalo | Busca retorna opções válidas e impede venda acima do estoque |

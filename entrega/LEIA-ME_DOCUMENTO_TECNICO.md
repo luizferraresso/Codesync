@@ -2,6 +2,8 @@
 
 Data de referência: 16/11/2026.
 
+Commit de referência das alterações na main: `66fab2540930cf7152715798a3c7362b6cdf3a31` — https://github.com/luizferraresso/Codesync/commit/66fab2540930cf7152715798a3c7362b6cdf3a31 . A capa e a seção de hospedagem/versionamento do PDF identificam esse commit; a regeneração do documento é registrada em um commit posterior, pois altera os próprios arquivos de entrega.
+
 - `HospedJa_Documento_Tecnico_Checkpoint3_2026-11-16.pdf`: versão final com identificação acadêmica preenchida e dez capturas reais.
 - `HospedJa_Documento_Tecnico_Checkpoint3_2026-11-16.docx`: versão editável com o mesmo conteúdo e as imagens incorporadas.
 - `HospedJa_Documento_Tecnico_Checkpoint3_2026-11-16.html`: versão de leitura no navegador e origem da impressão em PDF.
