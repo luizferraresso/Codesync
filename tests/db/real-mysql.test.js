@@ -16,7 +16,7 @@ const run = process.env.RUN_DB_TESTS === '1';
     const senha='TesteIntegracao#2026';
     let id;
     try {
-      const reg=await request(app).post('/api/v1/auth/register').send({nome:'Teste Integracao',email,senha});
+      const reg=await request(app).post('/api/v1/auth/register').send({nome:'Teste Integracao',email,senha,cpf:'39053344705'});
       expect(reg.status).toBe(201);
       id=reg.body.data.id_usuario;
       const [stored]=await pool.execute('SELECT senha_hash FROM tb_usuario WHERE id_usuario=?',[id]);

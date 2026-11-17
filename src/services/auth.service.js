@@ -5,9 +5,13 @@ const { fail } = require('../utils/errors');
 async function register(data,role = 'CLIENTE') {
   const registered = await users.byEmail(data.email);
   if (registered) fail(409,'EMAIL_CADASTRADO','Email ja cadastrado');
+  const parsedCpf = require('../validators/schemas').cpf.safeParse(data.cpf);
+  if (!parsedCpf.success) fail(422,'CPF_INVALIDO','CPF invalido ou ausente');
+  const cpf = parsedCpf.data;
+  if (await users.byCpf(cpf)) fail(409,'CPF_CADASTRADO','CPF ja cadastrado');
   const hash = await hashPassword(data.senha);
   const id = await users.create({
-    nome: data.nome, email: data.email, senha_hash: hash,
+    nome: data.nome, email: data.email, cpf, senha_hash: hash,
     telefone: data.telefone ?? null, data_nascimento: data.data_nascimento ?? null,
     tipo_usuario: role
   });
@@ -18,7 +22,10 @@ async function authenticate(data) {
   // Comparacao dummy evita diferencas triviais entre email inexistente e senha errada.
   const dummyHash = '$2b$12$C6UzMDM.H6dfI/f/IKcEeOmzSa62HaBGYk9IjqqFYikAc1mc/Oh/a';
   const ok = await verifyPassword(data.senha, user?.senha_hash || dummyHash);
-  if (!user || !ok || user.status !== 'ATIVO') fail(401,'CREDENCIAIS_INVALIDAS','Credenciais invalidas');
+  const invalid = reason => fail(401,'CREDENCIAIS_INVALIDAS','Credenciais invalidas',reason);
+  if (!user) invalid('USUARIO_NAO_ENCONTRADO');
+  if (!ok) invalid('SENHA_INCORRETA');
+  if (user.status !== 'ATIVO') invalid('USUARIO_INATIVO');
   return { token: signToken(user), token_type: 'Bearer', expires_in: require('../config/env').JWT_EXPIRES_IN, user: await users.byId(user.id_usuario) };
 }
 async function changePassword(userId, data) {

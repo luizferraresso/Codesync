@@ -5,11 +5,15 @@
 **Consolidação:** Partes 1, 2, 3 e 4 em um único repositório, 24/10/2026.  
 **Equipe:** 5 integrantes (inserir nomes reais).
 
+**Atualização implantada em 16/11/2026:** CPF obrigatório e único, validação dos dígitos de CPF/CNPJ e nova coluna `tb_log.motivo` publicados na EC2/RDS existentes. API e banco conferidos por HTTPS, com 195 testes unitários/HTTP, 16 de integração local e 22 verificações operacionais aprovadas. [Alterações, backup, testes e migração](docs/ATUALIZACOES_2026-11-16.md). O frontend será desenvolvido em etapa posterior.
+
 **Deploy verificado em 29/10/2026:** [API/health](https://44.201.28.10/health) e [Swagger](https://44.201.28.10/api-docs/) disponíveis por HTTPS, com RDS privado, migração aplicada e 19 verificações operacionais aprovadas. Consulte o [registro do deploy e cuidados de operação](docs/DEPLOY_AWS_2026-10-29.md). O PDF de 28/10 é anterior a essa implantação.
 
 **Validação em 28/10/2026:** correções de segurança e integridade aplicadas; API e MySQL 8 executados em Docker. Veja [correções e execução local](docs/CORRECOES_E_DOCKER_2026-10-28.md) e a [avaliação anterior às correções](docs/AVALIACAO_PROJETO_2026-10-28.md).
 
 ## Acesso rápido
+
+**Entrega técnica atual:** [PDF final do Checkpoint 3, com identificação e imagens](entrega/HospedJa_Documento_Tecnico_Checkpoint3_2026-11-16.pdf) e [Word editável](entrega/HospedJa_Documento_Tecnico_Checkpoint3_2026-11-16.docx). A seção 14 apresenta dez evidências reais com legendas, data e responsável.
 
 | Documento | Para que serve |
 |---|---|

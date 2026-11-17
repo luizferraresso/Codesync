@@ -1,5 +1,9 @@
 # Documentação do HospedJá
 
+**Documento técnico consolidado de 16/11/2026:** [fonte e conteúdo completo](DOCUMENTO_TECNICO_CHECKPOINT3_2026-11-16.md), [PDF final com imagens](../entrega/HospedJa_Documento_Tecnico_Checkpoint3_2026-11-16.pdf) e [Word editável](../entrega/HospedJa_Documento_Tecnico_Checkpoint3_2026-11-16.docx). Inclui inventário de versões, modelagem/persistência, regras de negócio, próximos passos e dez capturas reais com legendas na seção 14. Identificação acadêmica preenchida; o passo a passo e os quadros vazios foram retirados da edição final.
+
+**Atualização implantada em 16/11/2026:** [CPF/CNPJ, motivo dos logs e hospedagem](ATUALIZACOES_2026-11-16.md). Nova migração aplicada no RDS e API atualizada na EC2; 22 verificações operacionais aprovadas, HTTPS público e conexão ao banco conferidos. Snapshot criado antes das alterações e conta antiga de teste removida com autorização, preservando seus logs.
+
 Revisão de 28/10/2026, comparada ao backend integrado no commit `0c4aa05` e às configurações presentes no repositório. Os documentos desta pasta descrevem o escopo efetivo; tabelas modeladas não significam APIs completas.
 
 **Atualização operacional de 29/10/2026:** o [deploy AWS foi executado e verificado](DEPLOY_AWS_2026-10-29.md), com o commit `eb05c89`, HTTPS no IP público e 19 verificações reais aprovadas. As referências a acesso/deploy pendentes nos relatórios datados de 28/10 e no PDF pertencem àquela revisão; o adendo de 29/10 descreve a situação remota atual.

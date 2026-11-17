@@ -8,10 +8,12 @@ describe('TDD 4: log seguro', () => {
   test('salva auditoria na tabela tb_log sem corpo, token ou senha',async()=>{
     pool.execute.mockResolvedValue([{affectedRows:1}]);
     await audit.record({userId:12,profile:'CLIENTE',action:'AUTENTICACAO',operation:'POST',
-      entity:'AUTH',result:'SUCESSO',ip:'127.0.0.1',details:{method:'POST',route:'/api/v1/auth/login',httpStatus:200,
+      entity:'AUTH',result:'SUCESSO',reason:'Sucesso no login',ip:'127.0.0.1',details:{method:'POST',route:'/api/v1/auth/login',httpStatus:200,
       senha:'nao-persistir',token:'nao-persistir',body:{segredo:'nao-persistir'}}});
     const [statement,params]=pool.execute.mock.calls[0];
     expect(statement).toContain('INSERT INTO tb_log');
+    expect(statement).toContain('motivo');
+    expect(params[7]).toBe('Sucesso no login');
     expect(statement).toContain('VALUES (?,?,?,?,?,?,?');
     const serialized=JSON.stringify(params);
     expect(serialized).not.toContain('nao-persistir');

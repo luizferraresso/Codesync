@@ -1,0 +1,321 @@
+{
+  "data_referencia": "2026-11-16",
+  "origem": "consulta somente leitura via SSM",
+  "ssm_command_id": "5d1ba2ce-6ecc-46ab-a766-46accfe07155",
+  "host": {
+    "os": {
+      "PRETTY_NAME": "Ubuntu 24.04.5 LTS",
+      "NAME": "Ubuntu",
+      "VERSION_ID": "24.04"
+    },
+    "docker": "29.1.3",
+    "buildx": "github.com/docker/buildx 0.30.1 0.30.1-0ubuntu1~24.04.1",
+    "compose": "Nao disponivel neste host",
+    "nginx": "nginx version: nginx/1.24.0 (Ubuntu)",
+    "git": "git version 2.43.0",
+    "awsCli": "aws-cli/2.35.21 Python/3.14.6 Linux/7.0.0-1014-aws exe/x86_64.ubuntu.24"
+  },
+  "aplicacao_banco": {
+    "versions": {
+      "node": "v22.23.5",
+      "npm": "10.9.9",
+      "packages": {
+        "bcrypt": "6.0.0",
+        "cors": "2.8.6",
+        "dotenv": "16.6.1",
+        "express": "4.22.3",
+        "express-rate-limit": "7.5.1",
+        "helmet": "8.3.0",
+        "jsonwebtoken": "9.0.3",
+        "mysql2": "3.24.6",
+        "swagger-ui-express": "5.0.1",
+        "winston": "3.19.0",
+        "yamljs": "0.3.0",
+        "zod": "4.6.7"
+      }
+    },
+    "db": {
+      "version": "8.4.11",
+      "charset": "utf8mb4",
+      "collation": "utf8mb4_0900_ai_ci",
+      "databaseName": "hospedja"
+    },
+    "tables": [
+      {
+        "TABLE_NAME": "tb_admin_hotel",
+        "ENGINE": "InnoDB"
+      },
+      {
+        "TABLE_NAME": "tb_atendimento",
+        "ENGINE": "InnoDB"
+      },
+      {
+        "TABLE_NAME": "tb_atendimento_historico",
+        "ENGINE": "InnoDB"
+      },
+      {
+        "TABLE_NAME": "tb_avaliacao_guia",
+        "ENGINE": "InnoDB"
+      },
+      {
+        "TABLE_NAME": "tb_avaliacao_hospedagem",
+        "ENGINE": "InnoDB"
+      },
+      {
+        "TABLE_NAME": "tb_endereco",
+        "ENGINE": "InnoDB"
+      },
+      {
+        "TABLE_NAME": "tb_endereco_usuario",
+        "ENGINE": "InnoDB"
+      },
+      {
+        "TABLE_NAME": "tb_favorito",
+        "ENGINE": "InnoDB"
+      },
+      {
+        "TABLE_NAME": "tb_filtro_pesquisa",
+        "ENGINE": "InnoDB"
+      },
+      {
+        "TABLE_NAME": "tb_foto_tipo_quarto",
+        "ENGINE": "InnoDB"
+      },
+      {
+        "TABLE_NAME": "tb_guia",
+        "ENGINE": "InnoDB"
+      },
+      {
+        "TABLE_NAME": "tb_hotel",
+        "ENGINE": "InnoDB"
+      },
+      {
+        "TABLE_NAME": "tb_imagem_hospedagem",
+        "ENGINE": "InnoDB"
+      },
+      {
+        "TABLE_NAME": "tb_item_reserva",
+        "ENGINE": "InnoDB"
+      },
+      {
+        "TABLE_NAME": "tb_log",
+        "ENGINE": "InnoDB"
+      },
+      {
+        "TABLE_NAME": "tb_log_admin_hotel",
+        "ENGINE": "InnoDB"
+      },
+      {
+        "TABLE_NAME": "tb_log_hotel",
+        "ENGINE": "InnoDB"
+      },
+      {
+        "TABLE_NAME": "tb_log_mensagem",
+        "ENGINE": "InnoDB"
+      },
+      {
+        "TABLE_NAME": "tb_log_pagamento",
+        "ENGINE": "InnoDB"
+      },
+      {
+        "TABLE_NAME": "tb_log_penalidade",
+        "ENGINE": "InnoDB"
+      },
+      {
+        "TABLE_NAME": "tb_log_rede_hotel",
+        "ENGINE": "InnoDB"
+      },
+      {
+        "TABLE_NAME": "tb_log_reserva",
+        "ENGINE": "InnoDB"
+      },
+      {
+        "TABLE_NAME": "tb_log_tipo_quarto",
+        "ENGINE": "InnoDB"
+      },
+      {
+        "TABLE_NAME": "tb_mensagem",
+        "ENGINE": "InnoDB"
+      },
+      {
+        "TABLE_NAME": "tb_midia_hospedagem",
+        "ENGINE": "InnoDB"
+      },
+      {
+        "TABLE_NAME": "tb_ocorrencia",
+        "ENGINE": "InnoDB"
+      },
+      {
+        "TABLE_NAME": "tb_pagamento",
+        "ENGINE": "InnoDB"
+      },
+      {
+        "TABLE_NAME": "tb_pagamento_status",
+        "ENGINE": "InnoDB"
+      },
+      {
+        "TABLE_NAME": "tb_penalidade",
+        "ENGINE": "InnoDB"
+      },
+      {
+        "TABLE_NAME": "tb_pesquisa",
+        "ENGINE": "InnoDB"
+      },
+      {
+        "TABLE_NAME": "tb_rede_hoteis",
+        "ENGINE": "InnoDB"
+      },
+      {
+        "TABLE_NAME": "tb_reserva",
+        "ENGINE": "InnoDB"
+      },
+      {
+        "TABLE_NAME": "tb_reserva_guia",
+        "ENGINE": "InnoDB"
+      },
+      {
+        "TABLE_NAME": "tb_reserva_hospede",
+        "ENGINE": "InnoDB"
+      },
+      {
+        "TABLE_NAME": "tb_reserva_status",
+        "ENGINE": "InnoDB"
+      },
+      {
+        "TABLE_NAME": "tb_status_mensagem",
+        "ENGINE": "InnoDB"
+      },
+      {
+        "TABLE_NAME": "tb_status_pagamento",
+        "ENGINE": "InnoDB"
+      },
+      {
+        "TABLE_NAME": "tb_status_reserva",
+        "ENGINE": "InnoDB"
+      },
+      {
+        "TABLE_NAME": "tb_tipo_quarto",
+        "ENGINE": "InnoDB"
+      },
+      {
+        "TABLE_NAME": "tb_usuario",
+        "ENGINE": "InnoDB"
+      }
+    ],
+    "constraints": [
+      {
+        "CONSTRAINT_TYPE": "PRIMARY KEY",
+        "total": "40"
+      },
+      {
+        "CONSTRAINT_TYPE": "UNIQUE",
+        "total": "14"
+      },
+      {
+        "CONSTRAINT_TYPE": "FOREIGN KEY",
+        "total": "68"
+      },
+      {
+        "CONSTRAINT_TYPE": "CHECK",
+        "total": "35"
+      }
+    ],
+    "tls": [
+      {
+        "Variable_name": "Ssl_cipher",
+        "Value": "TLS_AES_256_GCM_SHA384"
+      },
+      {
+        "Variable_name": "Ssl_version",
+        "Value": "TLSv1.3"
+      }
+    ],
+    "logs": [
+      {
+        "id_log": "164",
+        "acao": "AUTENTICACAO",
+        "resultado": "NEGADO",
+        "motivo": "Falha no login: Usuario nao encontrado",
+        "data_hora": "2026-11-16 20:21:04"
+      },
+      {
+        "id_log": "163",
+        "acao": "AUTENTICACAO",
+        "resultado": "SUCESSO",
+        "motivo": "Sucesso no login",
+        "data_hora": "2026-11-16 20:21:04"
+      },
+      {
+        "id_log": "162",
+        "acao": "AUTENTICACAO",
+        "resultado": "NEGADO",
+        "motivo": "Falha no login: Senha incorreta",
+        "data_hora": "2026-11-16 20:21:04"
+      },
+      {
+        "id_log": "161",
+        "acao": "CADASTRO",
+        "resultado": "FALHA",
+        "motivo": "Falha no cadastro: CPF ja cadastrado",
+        "data_hora": "2026-11-16 20:21:03"
+      },
+      {
+        "id_log": "160",
+        "acao": "CADASTRO",
+        "resultado": "SUCESSO",
+        "motivo": "Sucesso no cadastro",
+        "data_hora": "2026-11-16 20:21:03"
+      },
+      {
+        "id_log": "159",
+        "acao": "CADASTRO",
+        "resultado": "FALHA",
+        "motivo": "Falha no cadastro: CPF invalido ou ausente",
+        "data_hora": "2026-11-16 20:21:03"
+      },
+      {
+        "id_log": "158",
+        "acao": "CADASTRO",
+        "resultado": "FALHA",
+        "motivo": "Falha no cadastro: CPF invalido ou ausente",
+        "data_hora": "2026-11-16 20:21:03"
+      },
+      {
+        "id_log": "157",
+        "acao": "CADASTRO",
+        "resultado": "FALHA",
+        "motivo": "Falha no cadastro: CPF invalido ou ausente",
+        "data_hora": "2026-11-16 20:21:03"
+      },
+      {
+        "id_log": "156",
+        "acao": "UNKNOWN_POST",
+        "resultado": "FALHA",
+        "motivo": "Evento sem motivo informado",
+        "data_hora": "2026-11-16 18:49:08"
+      },
+      {
+        "id_log": "155",
+        "acao": "UNKNOWN_POST",
+        "resultado": "FALHA",
+        "motivo": "Evento sem motivo informado",
+        "data_hora": "2026-11-16 14:38:21"
+      },
+      {
+        "id_log": "154",
+        "acao": "UNKNOWN_POST",
+        "resultado": "FALHA",
+        "motivo": "Evento sem motivo informado",
+        "data_hora": "2026-11-16 14:38:21"
+      },
+      {
+        "id_log": "153",
+        "acao": "UNKNOWN_POST",
+        "resultado": "FALHA",
+        "motivo": "Evento sem motivo informado",
+        "data_hora": "2026-11-16 14:38:21"
+      }
+    ]
+  },
+  "release": "revision=5fa7f2ebc6aa18ac695539feb12045a8956730b5 health=healthy"
+}

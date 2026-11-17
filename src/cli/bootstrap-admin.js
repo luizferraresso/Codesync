@@ -34,9 +34,13 @@ function ask(question, hidden = false) {
   if (await users.byEmail(email)) throw new Error('Este email ja existe; nao alterar perfil implicitamente');
   const nome = (await ask('Nome do administrador: ')).trim();
   if (!nome || nome.length > 120) throw new Error('Nome invalido');
+  const parsedCpf = require('../validators/schemas').cpf.safeParse(await ask('CPF do administrador: '));
+  if (!parsedCpf.success) throw new Error('CPF invalido');
+  const cpf = parsedCpf.data;
+  if (await users.byCpf(cpf)) throw new Error('CPF ja cadastrado');
   const senha = await ask('Senha forte inicial (oculta): ',true);
   if (!password.safeParse(senha).success) throw new Error('Senha deve conter pelo menos 10 caracteres e no maximo 72 bytes UTF-8');
-  const id = await users.create({nome,email,senha_hash:await hashPassword(senha),tipo_usuario:'ADMIN'});
+  const id = await users.create({nome,email,cpf,senha_hash:await hashPassword(senha),tipo_usuario:'ADMIN'});
   process.stdout.write(`Conta administrativa criada com id ${id}. Altere a senha apos o primeiro login.\n`);
 })().catch(e=>{
   process.stderr.write(`Bootstrap abortado: ${e.message}\n`);

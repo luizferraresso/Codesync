@@ -5,11 +5,11 @@ USE hospedja;
 START TRANSACTION;
 
 INSERT INTO tb_usuario (id_usuario,nome,email,senha_hash,cpf,telefone,tipo_usuario) VALUES
-(1,'Cliente de Teste','cliente@hospedja.example','$2b$10$Qzxi5ub9TGxx8SqFA4B1KOOoUMK3jrwWBBxhrVa9K2pxVdTQf3Ckm',NULL,'34999990001','CLIENTE'),
-(2,'Administrador de Teste','admin@hospedja.example','$2b$10$ECD0.fvixhLEjUaYqH4HWuhiRMEKUitxoBOnUzpb4PxBy5Yf3MZCS',NULL,'34999990002','ADMIN'),
-(3,'Gestor de Teste','gestor@hospedja.example','$2b$10$NH4.cl3k7uC6MjbbMpOaYOqTkjZMQR24/WPgV8toymTkNPkXQO0Py',NULL,'34999990003','GESTOR_HOSPEDAGEM'),
-(4,'Guia de Teste','guia@hospedja.example','$2b$10$Uc6nfrSLQAhZHR1bqkfzd./laetlicCOMxh00NElrC2r1IrjKJXeK',NULL,'34999990004','GUIA'),
-(5,'Operador SAC de Teste','operador@hospedja.example','$2b$10$wWdlHfkDA2Zy/d2CdbgP5uhZhaNleOgHakfjZkXBOZKtCbyMyPkfe',NULL,'34999990005','OPERADOR_SAC');
+(1,'Cliente de Teste','cliente@hospedja.example','$2b$10$Qzxi5ub9TGxx8SqFA4B1KOOoUMK3jrwWBBxhrVa9K2pxVdTQf3Ckm','52998224725','34999990001','CLIENTE'),
+(2,'Administrador de Teste','admin@hospedja.example','$2b$10$ECD0.fvixhLEjUaYqH4HWuhiRMEKUitxoBOnUzpb4PxBy5Yf3MZCS','11144477735','34999990002','ADMIN'),
+(3,'Gestor de Teste','gestor@hospedja.example','$2b$10$NH4.cl3k7uC6MjbbMpOaYOqTkjZMQR24/WPgV8toymTkNPkXQO0Py','12345678909','34999990003','GESTOR_HOSPEDAGEM'),
+(4,'Guia de Teste','guia@hospedja.example','$2b$10$Uc6nfrSLQAhZHR1bqkfzd./laetlicCOMxh00NElrC2r1IrjKJXeK','98765432100','34999990004','GUIA'),
+(5,'Operador SAC de Teste','operador@hospedja.example','$2b$10$wWdlHfkDA2Zy/d2CdbgP5uhZhaNleOgHakfjZkXBOZKtCbyMyPkfe','01234567890','34999990005','OPERADOR_SAC');
 
 INSERT INTO tb_endereco_usuario (id_endereco_usuario,id_usuario,cep,logradouro,numero,bairro,cidade,uf,principal) VALUES
 (1,1,'38400001','Rua Exemplo','100','Centro','Uberlandia','MG',TRUE);

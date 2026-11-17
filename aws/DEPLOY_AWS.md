@@ -1,5 +1,7 @@
 # Implantação acadêmica na AWS — HospedJá / Checkpoint 3
 
+**Atualização de 16/11/2026:** [validação de CPF/CNPJ e motivo dos logs implantados](../docs/ATUALIZACOES_2026-11-16.md), com snapshot e 22 verificações operacionais. Para novas atualizações, considerar também a migração 002 e documentos existentes.
+
 **Situação em 29/10/2026:** deploy executado na EC2/RDS existentes. [Health HTTPS](https://44.201.28.10/health), [Swagger](https://44.201.28.10/api-docs/) e 19 verificações públicas aprovados; veja o [registro da operação, backup e renovação](../docs/DEPLOY_AWS_2026-10-29.md). As instruções de provisionamento abaixo continuam como referência; não criar recursos duplicados para repetir a atualização.
 
 **Histórico:** em 28/10, o patch do integrante ainda não permitia comprovação remota. Em 29/10, o acesso IAM autorizado permitiu inspecionar o ambiente, aplicar a migração e implantar `eb05c89` com preflight e candidato saudável. Consulte a [revisão original do patch](../docs/REVISAO_PATCH_AWS_2026-10-28.md) para o contexto anterior.
@@ -28,9 +30,9 @@
 3. Em RDS → Create database → MySQL 8.4 → Standard creation → Single-AZ, classe micro e tamanho de disco mínimo suportado. Desative **Public access**; selecione VPC, subnets privadas e `hospedja-rds`. Habilite backups para prova de conceito. A opção de [senha master gerenciada pelo Secrets Manager](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-secrets-manager.html) é compatível com essa arquitetura; mantenha o usuário master separado do usuário de aplicação. Se o ambiente do colega já existe, primeiro inspecioná-lo, sem criar recursos duplicados.
 4. Crie usuário **separado de aplicação** no MySQL (não use usuário master na API) e dê apenas direitos adequados de DML às tabelas. Admin master é usado **somente** na configuração inicial.
 5. Importe `database/01_schema.sql` usando cliente MySQL no EC2 (ou túnel SSM); depois `aws/02_status_basicos.sql`. **Não** execute `database/02_seed.sql` no RDS: ele contém usuários fictícios com senhas conhecidas.
-   Para atualizar um banco antigo, aplique a migração idempotente `npm run db:migrate` com um usuário de migração autorizado a `ALTER`, antes de trocar a API. Ela adiciona `tb_usuario.token_version`, necessária à revogação de sessões. Não conceda `ALTER` ao usuário DML da aplicação apenas para realizar o deploy. O preflight interrompe o deploy se faltar a coluna.
+   Para atualizar um banco antigo, aplique `npm run db:migrate` com um usuário de migração autorizado a `ALTER`, antes de trocar a API. Além de `tb_usuario.token_version`, o comando aplica CPF NOT NULL/UNIQUE, CHECKs dos dígitos CPF/CNPJ e `tb_log.motivo`. Corrija documentos antigos reais se houver `DOCUMENTOS_PENDENTES`; não use CPFs fictícios para contornar a verificação. Não conceda `ALTER` ao usuário DML da aplicação apenas para realizar o deploy. O preflight interrompe a promoção se faltarem essas migrações.
 6. Verifique: `SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='hospedja';` e códigos de status PENDENTE nas tabelas respectivas.
-7. **Primeiro ADMIN sem seed insegura:** depois de iniciar a API, execute `sudo docker exec -it hospedja-api node src/cli/bootstrap-admin.js`. O comando pergunta email, nome e senha sem eco e persiste bcrypt. Exige acesso SSH/SSM ao servidor; **não expõe rota de bootstrap**. Use conta administrativa apenas para demonstração e guarde credenciais fora do repositório.
+7. **Primeiro ADMIN sem seed insegura:** depois de iniciar a API, execute `sudo docker exec -it hospedja-api node src/cli/bootstrap-admin.js`. O comando pergunta email, nome, CPF válido/único e senha sem eco e persiste bcrypt. Exige acesso SSH/SSM ao servidor; **não expõe rota de bootstrap**. Use conta administrativa apenas para demonstração e guarde credenciais fora do repositório.
 
 Exemplo de importação com mysql-client instalado na EC2 (senha solicitada no terminal e NÃO passada por argumento visível no histórico):
 

@@ -15,9 +15,9 @@ async function createDraft(user=owner) {
 (run?describe:describe.skip)('Regressoes com MySQL real e transacoes concorrentes',()=>{
   beforeAll(async()=>{
     const hash=await hashPassword('TesteRegressao#2026');
-    for(const [suffix,role] of [['owner','CLIENTE'],['other','CLIENTE'],['admin','ADMIN']]) {
-      const [r]=await pool.execute('INSERT INTO tb_usuario (nome,email,senha_hash,tipo_usuario) VALUES (?,?,?,?)',
-        ['Regressao',`${nonce}-${suffix}@example.test`,hash,role]);
+    for(const [suffix,role,cpf] of [['owner','CLIENTE','52998224725'],['other','CLIENTE','11144477735'],['admin','ADMIN','12345678909']]) {
+      const [r]=await pool.execute('INSERT INTO tb_usuario (nome,email,senha_hash,tipo_usuario,cpf) VALUES (?,?,?,?,?)',
+        ['Regressao',`${nonce}-${suffix}@example.test`,hash,role,cpf]);
       const user={id_usuario:String(r.insertId),tipo_usuario:role,token_version:0};
       userIds.push(user.id_usuario);
       if(suffix==='owner') owner=user; else if(suffix==='other') other=user; else admin=user;

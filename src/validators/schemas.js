@@ -1,5 +1,8 @@
 'use strict';
 const { z } = require('zod');
+const { normalizeCpf, normalizeCnpj, isValidCpf, isValidCnpj } = require('../utils/documents');
+const cpf = z.string({ error: 'CPF obrigatorio' }).transform(normalizeCpf).refine(isValidCpf, 'CPF invalido');
+const cnpj = z.string().transform(normalizeCnpj).refine(isValidCnpj, 'CNPJ invalido');
 const required = (max = 150) => z.string().trim().min(1).max(max);
 const optional = (max = 255) => z.string().trim().max(max).nullable().optional();
 const bigintId = z.string().regex(/^[1-9]\d{0,19}$/, 'ID invalido')
@@ -18,7 +21,7 @@ const date = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine(
   'Data invalida');
 const time = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/).nullable().optional();
 const registration = z.object({
-  nome: required(120), email,
+  nome: required(120), email, cpf,
   senha: password,
   telefone: optional(20),
   data_nascimento: date.nullable().optional()
@@ -27,6 +30,7 @@ const staffCreate = registration.extend({
   tipo_usuario: z.enum(['GUIA','GESTOR_HOSPEDAGEM','OPERADOR_SAC'])
 }).strict();
 const login = z.object({ email, senha: z.string().min(1).max(200) }).strict();
+const managerAttach = z.object({ id_usuario: bigintId, cnpj: cnpj.nullable().optional() }).strict();
 const profilePatch = z.object({
   nome: required(120).optional(), telefone: optional(20),
   data_nascimento: date.nullable().optional()
@@ -80,7 +84,7 @@ const occurrenceReview = z.object({
   analise: required(5000)
 }).strict();
 module.exports = {
-  bigintId, password, pagination, registration, staffCreate, login, profilePatch, passwordPatch,
+  bigintId, password, cpf, cnpj, managerAttach, pagination, registration, staffCreate, login, profilePatch, passwordPatch,
   hotelCreate, hotelPatch, quartoCreate, quartoPatch,
   guiaCreate, guiaPatch, reservaCreate, reservaPatch,
   pagamentoCreate, occurrenceCreate, occurrenceReview

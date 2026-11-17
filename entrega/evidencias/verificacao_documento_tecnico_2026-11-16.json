@@ -1,0 +1,95 @@
+{
+  "data_referencia": "2026-11-16",
+  "data_exibida": "16/11/2026",
+  "checkpoint": 3,
+  "pdf_paginas": 31,
+  "docx_secoes": 14,
+  "imagens_incorporadas": 10,
+  "quadros_print_vazios": 0,
+  "passo_a_passo_removido": true,
+  "identificacao_academica_preenchida": true,
+  "responsavel_evidencias": "Luiz Felipe Ferraressso",
+  "figuras": [
+    {
+      "figura": 1,
+      "pagina_pdf": 22,
+      "original": "entrega/evidencias/prints_checkpoint3/01_api_health_nuvem.png",
+      "original_sha256": "9e096ef70ba396f2c612806df6f744c10a113358c556d5521ad3fc0d50047262",
+      "pixels_preservados": true
+    },
+    {
+      "figura": 2,
+      "pagina_pdf": 23,
+      "original": "entrega/evidencias/prints_checkpoint3/02_cadastro_api_201.png",
+      "original_sha256": "8d7d5cf84bc0e047ab5f43ef2ed88d3a532264526a49b8c5ac3cf8ec901ea18d",
+      "pixels_preservados": true
+    },
+    {
+      "figura": 3,
+      "pagina_pdf": 24,
+      "original": "entrega/evidencias/prints_checkpoint3/03_banco_conexao_cpf.png",
+      "original_sha256": "0d95f74d6cdca97b0ead3e451ac4a269c376905680921dc0f23939e8db57a54e",
+      "pixels_preservados": true
+    },
+    {
+      "figura": 4,
+      "pagina_pdf": 25,
+      "original": "entrega/evidencias/prints_checkpoint3/04_persistencia_usuario_rds.png",
+      "original_sha256": "81bfc2c85a2ab0dd7929ff76eaa72f089a8c9ceeebdad1389e8b8268f127af2c",
+      "pixels_preservados": true
+    },
+    {
+      "figura": 5,
+      "pagina_pdf": 26,
+      "original": "entrega/evidencias/prints_checkpoint3/05_email_duplicado_409.png",
+      "original_sha256": "82198e367e701bc3574541b7aea8a90d55e881cf27da639ca0437f74534c2f10",
+      "pixels_preservados": true
+    },
+    {
+      "figura": 6,
+      "pagina_pdf": 27,
+      "original": "entrega/evidencias/prints_checkpoint3/06_cpf_duplicado_409.png",
+      "original_sha256": "7f1cb61d85f50382b18173697dc7202c5e9a5de4d5b8d460d0dbef92abfcae3b",
+      "pixels_preservados": true
+    },
+    {
+      "figura": 7,
+      "pagina_pdf": 28,
+      "original": "entrega/evidencias/prints_checkpoint3/07_perfil_autenticado_200.png",
+      "original_sha256": "638ffb57f107985f87e3006b4e00548e2e29d5def1ae8f282f4f0820d48a2993",
+      "pixels_preservados": true
+    },
+    {
+      "figura": 8,
+      "pagina_pdf": 29,
+      "original": "entrega/evidencias/prints_checkpoint3/08_logs_motivos.png",
+      "original_sha256": "b2df2d3b352a02daa799897604d138991c73f42e606f29516b7f48ef0cb69f6a",
+      "pixels_preservados": true
+    },
+    {
+      "figura": 9,
+      "pagina_pdf": 30,
+      "original": "entrega/evidencias/prints_checkpoint3/09a_testes_cobertura.png",
+      "original_sha256": "2f709d7d96f172de8350028f84f2cd84d068a09c9204a72b59a1848cdb6a8801",
+      "pixels_preservados": true
+    },
+    {
+      "figura": 10,
+      "pagina_pdf": 31,
+      "original": "entrega/evidencias/prints_checkpoint3/09b_testes_cobertura.png",
+      "original_sha256": "f8bbe5465cdddd1e2ca1da8c270b0a4c2fcec9c55baf57fa5853d752cd4412b9",
+      "pixels_preservados": true
+    }
+  ],
+  "erros": [],
+  "arquivos": {
+    "HospedJa_Documento_Tecnico_Checkpoint3_2026-11-16.pdf": {
+      "bytes": 765119,
+      "sha256": "031364e07cd008d671d0b30bb509d389a53542e5ddb9a0335582190dd38c9212"
+    },
+    "HospedJa_Documento_Tecnico_Checkpoint3_2026-11-16.docx": {
+      "bytes": 576065,
+      "sha256": "ce43aafd08a5d460261d4eb1c54b3917e3dcf5e8677bd9581a12bbd4cc166eda"
+    }
+  }
+}

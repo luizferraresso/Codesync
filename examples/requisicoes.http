@@ -14,7 +14,7 @@ Content-Type: application/json
 POST {{base}}/api/v1/auth/register
 Content-Type: application/json
 
-{"nome":"Cliente HTTP Demo","email":"cliente-http-demo@example.com","senha":"Exemplo#Seguro2026"}
+{"nome":"Cliente HTTP Demo","email":"cliente-http-demo@example.com","cpf":"390.533.447-05","senha":"Exemplo#Seguro2026"}
 
 ### 4. Perfil protegido
 GET {{base}}/api/v1/usuarios/me
@@ -53,11 +53,11 @@ POST {{base}}/api/v1/usuarios
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
-{"nome":"Gestor Novo","email":"gestor-http-demo@example.com","senha":"GestorSeguro#2026","tipo_usuario":"GESTOR_HOSPEDAGEM"}
+{"nome":"Gestor Novo","email":"gestor-http-demo@example.com","cpf":"168.995.350-09","senha":"GestorSeguro#2026","tipo_usuario":"GESTOR_HOSPEDAGEM"}
 
 ### 12. Vincular gestor ao hotel 1 (necessario token ADMIN)
 POST {{base}}/api/v1/hoteis/1/gestores
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
-{"id_usuario":"3"}
+{"id_usuario":"3","cnpj":"11.222.333/0001-81"}

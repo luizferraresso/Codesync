@@ -90,6 +90,10 @@ components:
       type: object
       additionalProperties: false
       properties:
+        cpf: &cpfCadastro
+          type: string
+          description: CPF obrigatorio e unico, com digitos verificadores validos. Aceita 11 digitos ou mascara completa e armazena sem mascara.
+          example: '529.982.247-25'
         nome: &id001
           type: string
           minLength: 1
@@ -114,10 +118,12 @@ components:
       - nome
       - email
       - senha
+      - cpf
     CadastroEquipe:
       type: object
       additionalProperties: false
       properties:
+        cpf: *cpfCadastro
         nome: *id001
         email: *id002
         senha: *id003
@@ -133,6 +139,7 @@ components:
       - nome
       - email
       - senha
+      - cpf
       - tipo_usuario
     Login:
       type: object
@@ -413,6 +420,11 @@ components:
       additionalProperties: false
       properties:
         id_usuario: *id006
+        cnpj:
+          type: string
+          nullable: true
+          description: CNPJ numerico ou alfanumerico com digitos verificadores validos. Aceita mascara completa. Omitir preserva o valor existente, null remove o documento.
+          example: '11.222.333/0001-81'
       required:
       - id_usuario
     ReservaEditar:

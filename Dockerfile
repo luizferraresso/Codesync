@@ -20,6 +20,7 @@ RUN npm ci --omit=dev --no-audit --no-fund \
     && npm cache clean --force
 COPY --chown=node:node src ./src
 COPY --chown=node:node scripts/migrate.js scripts/preflight-deploy.js ./scripts/
+COPY --chown=node:node scripts/lib ./scripts/lib
 COPY --chown=node:node database/migrations ./database/migrations
 USER node
 EXPOSE 3000

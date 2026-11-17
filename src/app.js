@@ -17,10 +17,10 @@ app.set('trust proxy',env.TRUST_PROXY_HOPS);
 app.use(helmet());
 const origins = env.CORS_ORIGINS.split(',').map(x=>x.trim()).filter(Boolean);
 app.use(cors({origin:(origin,cb)=>cb(null,!origin||origins.includes(origin))}));
+app.use(audit);
 app.use(express.json({limit:'100kb'}));
 app.use((err,req,res,next) => err instanceof SyntaxError && 'body' in err
   ? next(new ApiError(400,'JSON_INVALIDO','Corpo JSON invalido')) : next(err));
-app.use(audit);
 app.get('/health', asyncHandler(async (_req,res) => {
   await pool.query('SELECT 1');
   res.json({status:'ok',service:'hospedja-api'});

@@ -9,10 +9,11 @@ describe('TDD 2/3: cadastro, login e JWT', () => {
     users.byEmail.mockResolvedValue(null);
     users.create.mockResolvedValue('10');
     users.byId.mockResolvedValue({id_usuario:'10',nome:'Teste',email:'teste@example.com',tipo_usuario:'CLIENTE',status:'ATIVO'});
-    const data = {nome:'Teste',email:'teste@example.com',senha:'Teste#Segura2026'};
+    const data = {nome:'Teste',email:'teste@example.com',cpf:'529.982.247-25',senha:'Teste#Segura2026'};
     const result = await auth.register(data);
     const written = users.create.mock.calls[0][0];
     expect(written.tipo_usuario).toBe('CLIENTE');
+    expect(written.cpf).toBe('52998224725');
     expect(written).not.toHaveProperty('senha');
     expect(await verifyPassword(data.senha,written.senha_hash)).toBe(true);
     expect(result).not.toHaveProperty('senha_hash');
@@ -21,6 +22,12 @@ describe('TDD 2/3: cadastro, login e JWT', () => {
     users.byEmail.mockResolvedValue({id_usuario:'7'});
     await expect(auth.register({email:'existente@example.com',senha:'Senha2026#',nome:'Pessoa'}))
       .rejects.toMatchObject({status:409,code:'EMAIL_CADASTRADO'});
+    expect(users.create).not.toHaveBeenCalled();
+  });
+  test('nega CPF duplicado mesmo com outro email', async () => {
+    users.byCpf.mockResolvedValue({id_usuario:'7'});
+    await expect(auth.register({nome:'Pessoa',email:'outro@example.com',cpf:'52998224725',senha:'Senha2026#'}))
+      .rejects.toMatchObject({status:409,code:'CPF_CADASTRADO'});
     expect(users.create).not.toHaveBeenCalled();
   });
   test('login com senha correta entrega JWT sem hash', async () => {

@@ -21,7 +21,7 @@ module.exports = (resource) => {
     const manager = require('../controllers/manager.controller');
     router.post('/:id/gestores',requireAuth,allowRoles('ADMIN'),
       validate(z.object({id:s.bigintId}),'params'),
-      validate(z.object({id_usuario:s.bigintId}).strict()),manager.attach);
+      validate(s.managerAttach),manager.attach);
     router.delete('/:id/gestores/:usuarioId',requireAuth,allowRoles('ADMIN'),
       validate(z.object({id:s.bigintId,usuarioId:s.bigintId}),'params'),manager.detach);
   }

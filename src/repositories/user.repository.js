@@ -6,6 +6,10 @@ async function byEmail(email) {
   const [rows] = await pool.execute('SELECT * FROM tb_usuario WHERE email = ? LIMIT 1', [email]);
   return rows[0] || null;
 }
+async function byCpf(cpf) {
+  const [rows] = await pool.execute('SELECT id_usuario FROM tb_usuario WHERE cpf = ? LIMIT 1', [cpf]);
+  return rows[0] || null;
+}
 async function byId(id, forAuth = false) {
   const [rows] = await pool.execute(`SELECT ${publicFields}${forAuth ? ',token_version' : ''} FROM tb_usuario WHERE id_usuario = ?`, [id]);
   return rows[0] || null;
@@ -21,4 +25,4 @@ async function changePassword(id, hash, previousHash) {
     WHERE id_usuario=? AND senha_hash=?`,[hash,id,previousHash]);
   return result.affectedRows;
 }
-module.exports = { byEmail, byId, all, create, update, changePassword };
+module.exports = { byEmail, byCpf, byId, all, create, update, changePassword };

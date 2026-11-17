@@ -5,6 +5,14 @@ const pool=require('../../src/config/database'),sql=require('../../src/repositor
 const manager=require('../../src/services/manager.service'),service=require('../../src/services/user.service');
 beforeEach(()=>{jest.resetAllMocks();sql.findById.mockResolvedValue({id_hotel:'1'});users.byId.mockResolvedValue({id_usuario:'2',tipo_usuario:'GESTOR_HOSPEDAGEM',status:'ATIVO'});pool.execute.mockResolvedValue([{affectedRows:1}]);});
 test('vincula gestor ativo',async()=>expect(await manager.attach('1','2')).toMatchObject({ativo:true}));
+test('persiste CNPJ normalizado no vinculo do gestor',async()=>{
+  await manager.attach('1','2','11.222.333/0001-81');
+  expect(pool.execute).toHaveBeenCalledWith(expect.stringContaining('cnpj=?'),['1','2','11222333000181','11222333000181']);
+});
+test('omitir CNPJ preserva documento do vinculo existente',async()=>{
+  await manager.attach('1','2');
+  expect(pool.execute.mock.calls[0][0]).not.toContain('cnpj=');
+});
 test('hotel inexistente nao recebe gestor',async()=>{sql.findById.mockResolvedValue(null);await expect(manager.attach('1','2')).rejects.toMatchObject({status:404});});
 test.each([null,{tipo_usuario:'CLIENTE',status:'ATIVO'},{tipo_usuario:'GESTOR_HOSPEDAGEM',status:'INATIVO'}])('recusa gestor invalido %j',async user=>{users.byId.mockResolvedValue(user);await expect(manager.attach('1','2')).rejects.toMatchObject({status:422});});
 test('desvincula sem excluir historico',async()=>expect(await manager.detach('1','2')).toMatchObject({ativo:false}));

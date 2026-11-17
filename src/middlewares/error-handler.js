@@ -10,5 +10,6 @@ module.exports = (err, _req, res, _next) => {
   if (err.code === 'ER_ROW_IS_REFERENCED_2') response = new ApiError(409,'VINCULO_EXISTENTE','Registro vinculado a outro');
   if (['ER_CHECK_CONSTRAINT_VIOLATED','ER_TRUNCATED_WRONG_VALUE_FOR_FIELD','ER_WARN_DATA_OUT_OF_RANGE','ER_DATA_TOO_LONG'].includes(err.code)) response = new ApiError(422,'RESTRICAO_BANCO','Dados incompatíveis com restrição');
   if (response.status >= 500) logger.error('request_failed', { code: err.code || 'INTERNAL' });
+  res.locals.auditErrorCode = err instanceof ApiError ? err.auditCode : response.code;
   res.status(response.status).json({ error: { code: response.code, message: response.message } });
 };
