@@ -9,3 +9,7 @@ logs/
 coverage/
 .DS_Store
 npm-debug.log*
+frontend/dist/
+frontend/test-results/
+frontend/playwright-report/
+figma/*.zip

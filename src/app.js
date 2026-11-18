@@ -38,6 +38,8 @@ app.use('/api/v1/guias',require('./routes/catalog.routes')('guias'));
 app.use('/api/v1/reservas',require('./routes/reservation.routes'));
 app.use('/api/v1/pagamentos',require('./routes/payment.routes'));
 app.use('/api/v1/ocorrencias',require('./routes/occurrence.routes'));
+// HashRouter: somente / e /index.html servem a SPA; APIs desconhecidas continuam 404 JSON.
+app.use(require('./middlewares/frontend')(path.join(__dirname, '..', 'frontend', 'dist')));
 app.use((_req,_res,next)=>next(new ApiError(404,'ROTA_NAO_ENCONTRADA','Endpoint nao encontrado')));
 app.use(errorHandler);
 module.exports = app;

@@ -1,9 +1,13 @@
 # HospedJá - Checkpoint 3 | CodeSync (Grupo 3)
 
 **Disciplina:** Projeto de Software 2 - UNIUBE  
-**Status:** backend acadêmico inicial + documentação + plano de validação. **Não é versão de produção.**  
+**Status:** backend acadêmico + frontend inicial integrado + documentação e validação. **Não é versão de produção.**
 **Consolidação:** Partes 1, 2, 3 e 4 em um único repositório, 24/10/2026.  
 **Equipe:** 5 integrantes (inserir nomes reais).
+
+**Frontend iniciado em 18/11/2026:** interface baseada na exportação do Figma Make, com cadastro/login reais, perfil, troca de senha, catálogo e rascunhos de reservas. Implementação local na branch `feat/frontend-figma`, ainda sem nova publicação na AWS. [Escopo, tecnologias, execução e testes](frontend/README.md). Execute `npm run web:install` e `npm run web:dev`; no PowerShell com scripts bloqueados, use `npm.cmd`.
+
+**Estado completo do projeto:** [entregas e pendências de banco, backend, frontend e hospedagem — 18/11/2026](docs/STATUS_E_PLANO_COMPLETO_2026-11-18.md). Inclui inventário das 40 tabelas, regras de negócio, versões, evidências e ordem de conclusão.
 
 **Atualização implantada em 16/11/2026:** CPF obrigatório e único, validação dos dígitos de CPF/CNPJ e nova coluna `tb_log.motivo` publicados na EC2/RDS existentes. API e banco conferidos por HTTPS, com 195 testes unitários/HTTP, 16 de integração local e 22 verificações operacionais aprovadas. [Alterações, backup, testes e migração](docs/ATUALIZACOES_2026-11-16.md). O frontend será desenvolvido em etapa posterior.
 

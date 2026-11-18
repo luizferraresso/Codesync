@@ -10,6 +10,10 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
+    "web:install": "npm ci --prefix frontend --no-audit --no-fund",
+    "web:dev": "npm run dev --prefix frontend",
+    "web:build": "npm run build --prefix frontend",
+    "web:test": "npm test --prefix frontend",
     "check": "node scripts/check-project.js",
     "integrity": "node scripts/check-integrity.js",
     "db:migrate": "node scripts/migrate.js",

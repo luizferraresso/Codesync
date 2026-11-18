@@ -5,7 +5,7 @@ const {createHash}=require('node:crypto');
 const {isUtf8}=require('node:buffer');
 const root=path.resolve(__dirname,'..');
 const manifest=path.join(root,'SHA256SUMS.txt');
-const excluded=new Set(['.git','node_modules','coverage','logs','.npm-cache','.aws','.codex','.agents']);
+const excluded=new Set(['.git','node_modules','coverage','logs','.npm-cache','.aws','.codex','.agents','dist','test-results','playwright-report']);
 const examples=new Set(['.env.example','.env.compose.example','.env.integration.example']);
 const binary=new Set(['.png','.jpg','.jpeg','.gif','.pdf','.docx','.zip']);
 function digest(file) {
@@ -18,6 +18,8 @@ function walk(dir) {
   return fs.readdirSync(dir,{withFileTypes:true}).flatMap(entry=>{
     if(excluded.has(entry.name) || entry.isSymbolicLink()) return [];
     const full=path.join(dir,entry.name);
+    // ZIP original do Figma é uma entrada local; o fonte integrado fica em frontend/.
+    if(dir===root && entry.name==='figma') return [];
     if(entry.isDirectory()) return walk(full);
     if(entry.name==='SHA256SUMS.txt' || entry.name.endsWith('.log') ||
       (entry.name.startsWith('.env') && !examples.has(entry.name))) return [];

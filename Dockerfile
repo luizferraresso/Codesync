@@ -2,6 +2,13 @@ FROM node:22-alpine AS base
 WORKDIR /app
 COPY --chmod=0644 package.json package-lock.json ./
 
+FROM node:22-alpine AS frontend-build
+WORKDIR /web
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY frontend/ ./
+RUN npm run build
+
 FROM base AS test
 RUN npm ci --no-audit --no-fund
 COPY src ./src
@@ -19,6 +26,7 @@ ENV NODE_ENV=production
 RUN npm ci --omit=dev --no-audit --no-fund \
     && npm cache clean --force
 COPY --chown=node:node src ./src
+COPY --from=frontend-build --chown=node:node /web/dist ./frontend/dist
 COPY --chown=node:node scripts/migrate.js scripts/preflight-deploy.js ./scripts/
 COPY --chown=node:node scripts/lib ./scripts/lib
 COPY --chown=node:node database/migrations ./database/migrations

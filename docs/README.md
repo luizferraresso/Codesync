@@ -1,5 +1,7 @@
 # Documentação do HospedJá
 
+**Situação consolidada em 18/11/2026:** [entregas e plano completo de banco, backend e frontend](STATUS_E_PLANO_COMPLETO_2026-11-18.md). Use esse relatório para acompanhar o estado atual e as pendências. Os relatórios datados abaixo preservam os resultados de suas próprias revisões.
+
 **Documento técnico consolidado de 16/11/2026:** [fonte e conteúdo completo](DOCUMENTO_TECNICO_CHECKPOINT3_2026-11-16.md), [PDF final com imagens](../entrega/HospedJa_Documento_Tecnico_Checkpoint3_2026-11-16.pdf) e [Word editável](../entrega/HospedJa_Documento_Tecnico_Checkpoint3_2026-11-16.docx). Inclui inventário de versões, modelagem/persistência, regras de negócio, próximos passos e dez capturas reais com legendas na seção 14. Identificação acadêmica preenchida; o passo a passo e os quadros vazios foram retirados da edição final.
 
 **Atualização implantada em 16/11/2026:** [CPF/CNPJ, motivo dos logs e hospedagem](ATUALIZACOES_2026-11-16.md). Nova migração aplicada no RDS e API atualizada na EC2; 22 verificações operacionais aprovadas, HTTPS público e conexão ao banco conferidos. Snapshot criado antes das alterações e conta antiga de teste removida com autorização, preservando seus logs.
