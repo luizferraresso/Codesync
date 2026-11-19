@@ -1,18 +1,50 @@
+
 'use strict';
+
 const auth = require('../services/auth.service');
 const { asyncHandler } = require('../utils/errors');
-const register = asyncHandler(async (req,res) => {
+
+const register = asyncHandler(async (req, res) => {
   const user = await auth.register(req.body);
+
   req.user = user;
-  res.status(201).json({ data: user });
+
+  res.status(201).json({
+    data: user
+  });
 });
-const login = asyncHandler(async (req,res) => {
+
+const registerGuide = asyncHandler(async (req, res) => {
+  const user = await auth.registerGuide(req.body);
+
+  res.status(201).json({
+    data: {
+      user,
+      status_aprovacao: 'PENDENTE',
+      message: 'Cadastro recebido. Aguarde a aprovação da equipe HospedJá.'
+    }
+  });
+});
+
+const login = asyncHandler(async (req, res) => {
   const data = await auth.authenticate(req.body);
+
   req.user = data.user;
-  res.json({data});
+
+  res.json({
+    data
+  });
 });
-const changePassword = asyncHandler(async (req,res) => {
-  await auth.changePassword(req.user.id_usuario,req.body);
+
+const changePassword = asyncHandler(async (req, res) => {
+  await auth.changePassword(req.user.id_usuario, req.body);
+
   res.status(204).end();
 });
-module.exports = { register, login, changePassword };
+
+module.exports = {
+  register,
+  registerGuide,
+  login,
+  changePassword
+};

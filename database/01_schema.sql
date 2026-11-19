@@ -1,4 +1,4 @@
--- HospedJa | CodeSync | Checkpoint 3 | Parte 1
+﻿-- HospedJa | CodeSync | Checkpoint 3 | Parte 1
 -- MySQL 8.0.16+ (CHECK efetivamente aplicado); InnoDB; UTF-8.
 -- Execucao inicial: mysql -u root -p < database/01_schema.sql
 -- Nao use DROP DATABASE automaticamente. Migracoes futuras devem preservar dados.
@@ -233,6 +233,7 @@ CREATE TABLE IF NOT EXISTS tb_guia (
   servicos_oferecidos TEXT,
   valor_diaria DECIMAL(12,2),
   status_aprovacao ENUM('PENDENTE','APROVADO','REPROVADO') NOT NULL DEFAULT 'PENDENTE',
+  motivo_reprovacao VARCHAR(500) NULL,
   status ENUM('ATIVO','INATIVO','BLOQUEADO') NOT NULL DEFAULT 'ATIVO',
   criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT uq_guia_usuario UNIQUE (id_usuario),
