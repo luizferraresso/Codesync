@@ -1,39 +1,192 @@
+
 'use strict';
+
 const users = require('../repositories/user.repository');
-const { hashPassword, verifyPassword, signToken } = require('../utils/security');
+const pool = require('../config/database');
+const sql = require('../repositories/sql.repository');
+
+const {
+  hashPassword,
+  verifyPassword,
+  signToken
+} = require('../utils/security');
+
 const { fail } = require('../utils/errors');
-async function register(data,role = 'CLIENTE') {
+
+async function register(data, role = 'CLIENTE') {
   const registered = await users.byEmail(data.email);
-  if (registered) fail(409,'EMAIL_CADASTRADO','Email ja cadastrado');
+
+  if (registered) {
+    fail(409, 'EMAIL_CADASTRADO', 'Email ja cadastrado');
+  }
+
   const parsedCpf = require('../validators/schemas').cpf.safeParse(data.cpf);
-  if (!parsedCpf.success) fail(422,'CPF_INVALIDO','CPF invalido ou ausente');
+
+  if (!parsedCpf.success) {
+    fail(422, 'CPF_INVALIDO', 'CPF invalido ou ausente');
+  }
+
   const cpf = parsedCpf.data;
-  if (await users.byCpf(cpf)) fail(409,'CPF_CADASTRADO','CPF ja cadastrado');
+
+  if (await users.byCpf(cpf)) {
+    fail(409, 'CPF_CADASTRADO', 'CPF ja cadastrado');
+  }
+
   const hash = await hashPassword(data.senha);
+
   const id = await users.create({
-    nome: data.nome, email: data.email, cpf, senha_hash: hash,
-    telefone: data.telefone ?? null, data_nascimento: data.data_nascimento ?? null,
+    nome: data.nome,
+    email: data.email,
+    cpf,
+    senha_hash: hash,
+    telefone: data.telefone ?? null,
+    data_nascimento: data.data_nascimento ?? null,
     tipo_usuario: role
   });
+
   return users.byId(id);
 }
+
+async function registerGuide(data) {
+  const registered = await users.byEmail(data.email);
+
+  if (registered) {
+    fail(409, 'EMAIL_CADASTRADO', 'Email ja cadastrado');
+  }
+
+  const parsedCpf = require('../validators/schemas').cpf.safeParse(data.cpf);
+
+  if (!parsedCpf.success) {
+    fail(422, 'CPF_INVALIDO', 'CPF invalido ou ausente');
+  }
+
+  const cpf = parsedCpf.data;
+
+  if (await users.byCpf(cpf)) {
+    fail(409, 'CPF_CADASTRADO', 'CPF ja cadastrado');
+  }
+
+  const senhaHash = await hashPassword(data.senha);
+  const connection = await pool.getConnection();
+
+  let idUsuario;
+
+  try {
+    await connection.beginTransaction();
+
+    idUsuario = await sql.create('tb_usuario', {
+      nome: data.nome,
+      email: data.email,
+      cpf,
+      senha_hash: senhaHash,
+      telefone: data.telefone ?? null,
+      data_nascimento: data.data_nascimento ?? null,
+      tipo_usuario: 'GUIA'
+    }, connection);
+
+    await sql.create('tb_guia', {
+      id_usuario: idUsuario,
+      id_hotel: null,
+      nome: data.nome,
+      email: data.email,
+      telefone: data.telefone ?? null,
+      tipo_guia: 'INTERNO',
+      descricao: data.descricao ?? null,
+      especialidade: data.especialidade ?? null,
+      area_atuacao: data.area_atuacao ?? null,
+      servicos_oferecidos: data.servicos_oferecidos ?? null,
+      status_aprovacao: 'PENDENTE',
+      status: 'ATIVO'
+    }, connection);
+
+    await connection.commit();
+  } catch (error) {
+    try {
+      await connection.rollback();
+    } catch {
+      // Mantém o erro original caso o rollback também falhe.
+    }
+
+    if (error?.code === 'ER_DUP_ENTRY') {
+      fail(
+        409,
+        'DADOS_CADASTRADOS',
+        'Já existe uma conta cadastrada com este e-mail ou CPF'
+      );
+    }
+
+    throw error;
+  } finally {
+    connection.release();
+  }
+
+  return users.byId(idUsuario);
+}
+
 async function authenticate(data) {
   const user = await users.byEmail(data.email);
+
   // Comparacao dummy evita diferencas triviais entre email inexistente e senha errada.
-  const dummyHash = '$2b$12$C6UzMDM.H6dfI/f/IKcEeOmzSa62HaBGYk9IjqqFYikAc1mc/Oh/a';
-  const ok = await verifyPassword(data.senha, user?.senha_hash || dummyHash);
-  const invalid = reason => fail(401,'CREDENCIAIS_INVALIDAS','Credenciais invalidas',reason);
+  const dummyHash =
+    '$2b$12$C6UzMDM.H6dfI/f/IKcEeOmzSa62HaBGYk9IjqqFYikAc1mc/Oh/a';
+
+  const ok = await verifyPassword(
+    data.senha,
+    user?.senha_hash || dummyHash
+  );
+
+  const invalid = reason =>
+    fail(
+      401,
+      'CREDENCIAIS_INVALIDAS',
+      'Credenciais invalidas',
+      reason
+    );
+
   if (!user) invalid('USUARIO_NAO_ENCONTRADO');
   if (!ok) invalid('SENHA_INCORRETA');
   if (user.status !== 'ATIVO') invalid('USUARIO_INATIVO');
-  return { token: signToken(user), token_type: 'Bearer', expires_in: require('../config/env').JWT_EXPIRES_IN, user: await users.byId(user.id_usuario) };
+
+  return {
+    token: signToken(user),
+    token_type: 'Bearer',
+    expires_in: require('../config/env').JWT_EXPIRES_IN,
+    user: await users.byId(user.id_usuario)
+  };
 }
+
 async function changePassword(userId, data) {
   const profile = await users.byId(userId);
-  if (!profile) fail(404,'NAO_ENCONTRADO','Usuario nao encontrado');
+
+  if (!profile) {
+    fail(404, 'NAO_ENCONTRADO', 'Usuario nao encontrado');
+  }
+
   const user = await users.byEmail(profile.email);
-  if (!await verifyPassword(data.atual, user.senha_hash)) fail(401,'SENHA_ATUAL_INVALIDA','Senha atual invalida');
-  const changed = await users.changePassword(userId,await hashPassword(data.nova),user.senha_hash);
-  if (!changed) fail(409,'SENHA_ALTERADA','Senha alterada em outra sessao; autentique novamente');
+
+  if (!await verifyPassword(data.atual, user.senha_hash)) {
+    fail(401, 'SENHA_ATUAL_INVALIDA', 'Senha atual invalida');
+  }
+
+  const changed = await users.changePassword(
+    userId,
+    await hashPassword(data.nova),
+    user.senha_hash
+  );
+
+  if (!changed) {
+    fail(
+      409,
+      'SENHA_ALTERADA',
+      'Senha alterada em outra sessao; autentique novamente'
+    );
+  }
 }
-module.exports = { register, registerStaff: data => register(data,data.tipo_usuario), authenticate, changePassword };
+
+module.exports = {
+  register,
+  registerGuide,
+  registerStaff: data => register(data, data.tipo_usuario),
+  authenticate,
+  changePassword
+};

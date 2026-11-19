@@ -1,3 +1,4 @@
+
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const tabs = [
@@ -28,7 +29,13 @@ const tabs = [
     label: 'Explorar',
     icon: (active: boolean) => (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-        <circle cx="12" cy="12" r="9" stroke={active ? '#7C3AED' : '#9CA3AF'} strokeWidth="2" />
+        <circle
+          cx="12"
+          cy="12"
+          r="9"
+          stroke={active ? '#7C3AED' : '#9CA3AF'}
+          strokeWidth="2"
+        />
         <path
           d="M16.5 7.5l-2.89 5.78L8 16.5l2.89-5.78L16.5 7.5z"
           stroke={active ? '#7C3AED' : '#9CA3AF'}
@@ -76,9 +83,23 @@ const tabs = [
           strokeWidth="2"
           fill={active ? '#EDE9FE' : 'none'}
         />
-        <path d="M3 9h18" stroke={active ? '#7C3AED' : '#9CA3AF'} strokeWidth="2" />
-        <path d="M8 2v4M16 2v4" stroke={active ? '#7C3AED' : '#9CA3AF'} strokeWidth="2" strokeLinecap="round" />
-        <path d="M7 13h4M7 17h6" stroke={active ? '#7C3AED' : '#9CA3AF'} strokeWidth="2" strokeLinecap="round" />
+        <path
+          d="M3 9h18"
+          stroke={active ? '#7C3AED' : '#9CA3AF'}
+          strokeWidth="2"
+        />
+        <path
+          d="M8 2v4M16 2v4"
+          stroke={active ? '#7C3AED' : '#9CA3AF'}
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+        <path
+          d="M7 13h4M7 17h6"
+          stroke={active ? '#7C3AED' : '#9CA3AF'}
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
       </svg>
     ),
   },
@@ -111,21 +132,50 @@ export default function BottomNav() {
   const navigate = useNavigate();
 
   return (
-    <nav aria-label="Navegação principal" className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-sm bg-white border-t border-gray-100 z-50 shadow-lg">
-      <div className="flex items-center justify-around px-2 py-2 pb-safe">
+    <nav
+      aria-label="Navegação principal"
+      className="
+        fixed bottom-0 left-0 w-full
+        bg-white border-t border-gray-100
+        z-50 shadow-lg
+        md:sticky md:top-0 md:bottom-auto
+        md:border-t-0 md:border-b
+        md:shadow-sm
+      "
+    >
+      <div
+        className="
+          flex items-center justify-around
+          px-2 py-2 pb-safe
+          md:mx-auto md:max-w-7xl
+          md:justify-end md:gap-6
+          md:px-8 md:py-3
+        "
+      >
         {tabs.map((tab) => {
           const active = location.pathname.startsWith(tab.path);
+
           return (
             <button
               key={tab.path}
               aria-current={active ? 'page' : undefined}
               onClick={() => navigate(tab.path)}
-              className="flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition-all"
+              className="
+                flex flex-col items-center gap-0.5
+                px-3 py-1 rounded-xl
+                transition-all
+                hover:bg-violet-50
+                md:flex-row md:gap-2
+                md:px-4 md:py-2
+              "
             >
               {tab.icon(active)}
+
               <span
-                className="text-[10px] font-medium transition-colors"
-                style={{ color: active ? '#7C3AED' : '#9CA3AF' }}
+                className="text-[10px] font-medium transition-colors md:text-sm"
+                style={{
+                  color: active ? '#7C3AED' : '#9CA3AF',
+                }}
               >
                 {tab.label}
               </span>

@@ -1,4 +1,4 @@
-openapi: 3.0.3
+﻿openapi: 3.0.3
 info:
   title: HospedJá — API REST (Checkpoint 3)
   version: 0.3.0
@@ -20,6 +20,7 @@ tags:
 - name: Reservas
 - name: Pagamentos
 - name: Ocorrências
+- name: Administração
 components:
   securitySchemes:
     bearerAuth:
@@ -1310,6 +1311,157 @@ paths:
         in: path
         required: true
         schema: *id006
+  /api/v1/admin/guias/pendentes:
+    get:
+      tags:
+      - Administração
+      summary: Lista guias aguardando aprovação [ADMIN]
+      description: Retorna os cadastros de guias com status de aprovação PENDENTE. Acesso exclusivo de administradores.
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 100
+      - name: offset
+        in: query
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+      responses:
+        '200':
+          description: Lista de guias pendentes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+        '401':
+          $ref: '#/components/responses/Erro'
+        '403':
+          $ref: '#/components/responses/Erro'
+  /api/v1/admin/guias/{id}:
+    get:
+      tags:
+      - Administração
+      summary: Consulta cadastro de guia [ADMIN]
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      responses:
+        '200':
+          description: Dados do cadastro
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          $ref: '#/components/responses/Erro'
+        '403':
+          $ref: '#/components/responses/Erro'
+        '404':
+          $ref: '#/components/responses/Erro'
+  /api/v1/admin/guias/{id}/aprovar:
+    patch:
+      tags:
+      - Administração
+      summary: Aprova cadastro de guia [ADMIN]
+      description: Aprova um cadastro que ainda esteja PENDENTE.
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      responses:
+        '200':
+          description: Cadastro aprovado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          $ref: '#/components/responses/Erro'
+        '403':
+          $ref: '#/components/responses/Erro'
+        '404':
+          $ref: '#/components/responses/Erro'
+        '409':
+          $ref: '#/components/responses/Erro'
+  /api/v1/admin/guias/{id}/reprovar:
+    patch:
+      tags:
+      - Administração
+      summary: Reprova cadastro de guia [ADMIN]
+      description: Reprova um cadastro pendente e registra a justificativa da decisão.
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - motivo_reprovacao
+              properties:
+                motivo_reprovacao:
+                  type: string
+                  minLength: 10
+                  maxLength: 500
+                  example: Documentação profissional incompleta.
+      responses:
+        '200':
+          description: Cadastro reprovado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          $ref: '#/components/responses/Erro'
+        '403':
+          $ref: '#/components/responses/Erro'
+        '404':
+          $ref: '#/components/responses/Erro'
+        '409':
+          $ref: '#/components/responses/Erro'
+        '422':
+          $ref: '#/components/responses/Erro'
   /api/v1/hoteis/{id}/gestores:
     post:
       tags:
