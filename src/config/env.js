@@ -17,7 +17,25 @@ const schema = z.object({
   CORS_ORIGINS: z.string().default('http://localhost:5173'),
   TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(5).default(0),
   LOG_LEVEL: z.string().default('info'),
-  LOG_FILE: z.string().optional().default('')
+  LOG_FILE: z.string().optional().default(''),
+  DEEPSEEK_API_KEY: z.string().min(1),
+DEEPSEEK_BASE_URL: z.string().url().default('https://api.deepseek.com'),
+DEEPSEEK_MODEL: z.string().min(1).default('deepseek-chat'),
+DEEPSEEK_TIMEOUT_MS: z.coerce.number().int().positive().default(30000),
+
+  DEEPSEEK_API_KEY: z.string().optional().default(''),
+  DEEPSEEK_BASE_URL: z.string()
+    .url()
+    .default('https://api.deepseek.com'),
+  DEEPSEEK_MODEL: z.string()
+    .min(1)
+    .default('deepseek-flash'),
+  DEEPSEEK_TIMEOUT_MS: z.coerce
+    .number()
+    .int()
+    .min(1000)
+    .max(120000)
+    .default(30000)
 });
 const parsed = schema.safeParse(process.env);
 if (!parsed.success) {
